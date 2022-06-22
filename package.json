@@ -1,0 +1,29 @@
+{
+  "name": "actions-tester",
+  "version": "0.0.1",
+  "description": "foo",
+  "main": "index.js",
+  "scripts": {
+    "generate": "node generate.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bradrf/actions-tester.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bradrf/actions-tester/issues"
+  },
+  "homepage": "https://github.com/bradrf/actions-tester#readme",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "build": {
+    "win": {
+      "certificateSubjectName": "FoozyFoo",
+      "certificateSha1": "aaaabbbbbvvcccccccddddd"
+    }
+  }
+}

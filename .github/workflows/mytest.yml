@@ -63,9 +63,7 @@ jobs:
         if: matrix.os == 'windows-latest'
 
       - run: yarn generate
-      - run: |
-          mkdir release
-          echo "${{ matrix.os }}" > release/latest-${{ matrix.os }}.yml
+      - run: echo "${{ matrix.os }}" > release/latest-${{ matrix.os }}.yml
 
       - uses: actions/upload-artifact@v3
         with:

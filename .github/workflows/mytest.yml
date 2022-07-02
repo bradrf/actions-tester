@@ -80,10 +80,13 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - id: ref
+        run: echo "::set-output name=value::${GITHUB_REF#refs/tags/}"
+
       - uses: sarisia/actions-status-discord@v1
         if: always()
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           nodetail: true
-          title: "Released ${{ github.ref }}: ${{ needs.build.outputs.release_url }}"
+          title: "Released ${{ steps.ref.outputs.name }}: ${{ needs.build.outputs.release_url }}"

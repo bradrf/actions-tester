@@ -8,16 +8,8 @@ jobs:
   create:
     runs-on: ubuntu-latest
     steps:
-      - name: Download package.json
-        run: >
-          curl https://raw.githubusercontent.com/${{ env.GITHUB_REPOSITORY }}/${{ env.GITHUB_SHA }}/package.json?token=${{ secrets.GITHUB_TOKEN }}
-          > package.json
-
-      - run: echo "release_name=$(awk -F\" '$2 == "version" { print $4 }' package.json)" >> $GITHUB_ENV
-
       - uses: softprops/action-gh-release@v1
         with:
-          name: ${{ env.release_name }}
           generate_release_notes: false
 
   build:
@@ -25,19 +17,18 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest] #, macos-latest, windows-latest]
         include:
           - os: ubuntu-latest
             release_suffix: ubuntu
-          - os: macos-latest
-            release_suffix: mac
-          - os: windows-latest
-            release_suffix: windows
+          # - os: macos-latest
+          #   release_suffix: mac
+          # - os: windows-latest
+          #   release_suffix: windows
 
     runs-on: ${{ matrix.os }}
 
     outputs:
-      release_id: ${{ steps.release.outputs.id }}
       release_url: ${{ steps.release.outputs.url }}
 
     steps:
@@ -95,4 +86,4 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           nodetail: true
-          title: "Released ${{ needs.build.outputs.release_id }}): ${{ needs.build.outputs.release_url }}"
+          title: "Released ${{ github.ref }}: ${{ needs.build.outputs.release_url }}"

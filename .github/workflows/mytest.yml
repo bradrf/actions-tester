@@ -12,7 +12,9 @@ jobs:
         run: >
           curl https://raw.githubusercontent.com/${{ env.GITHUB_REPOSITORY }}/${{ env.GITHUB_SHA }}/package.json?token=${{ secrets.GITHUB_TOKEN }}
           > package.json
+
       - run: echo "release_name=$(awk -F\" '$2 == "version" { print $4 }' package.json)" >> $GITHUB_ENV
+
       - uses: softprops/action-gh-release@v1
         with:
           name: ${{ env.release_name }}
@@ -33,6 +35,10 @@ jobs:
             release_suffix: windows
 
     runs-on: ${{ matrix.os }}
+
+    outputs:
+      release_id: ${{ steps.release.outputs.id }}
+      release_url: ${{ steps.release.outputs.url }}
 
     steps:
       - run: |
@@ -70,19 +76,23 @@ jobs:
           name: manifest
           path: release/latest*.yml
 
-      - uses: softprops/action-gh-release@v1
+      - id: release
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ needs.create.outputs.tag-name }}
           # fail_on_unmatched_files: true
           files: |
             release/*.dmg
             release/*.deb
             release/*.exe
 
+  announce:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
       - uses: sarisia/actions-status-discord@v1
         if: always()
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           nodetail: true
-          title: "Released ${{ needs.create.outputs.tag-name }} (${{ needs.create.outputs.id }}): ${{ needs.create.outputs.url }}"
+          title: "Released ${{ needs.build.outputs.release_id }}): ${{ needs.build.outputs.release_url }}"

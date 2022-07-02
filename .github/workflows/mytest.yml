@@ -63,6 +63,14 @@ jobs:
         if: matrix.os == 'windows-latest'
 
       - run: yarn generate
+      - run: |
+          mkdir release
+          echo "${{ matrix.os }}" > release/latest-${{ matrix.os }}.yml
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: manifest
+          path: release/latest*.yml
 
       - uses: softprops/action-gh-release@v1
         with:

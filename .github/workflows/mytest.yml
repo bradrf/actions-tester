@@ -73,7 +73,13 @@ jobs:
       - uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ needs.create.outputs.tag-name }}
+          fail_on_unmatched_files: true
           files: |
             release/*.dmg
             release/*.deb
             release/*.exe
+
+      - uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}

@@ -8,7 +8,8 @@ jobs:
   create:
     runs-on: ubuntu-latest
     steps:
-      - uses: softprops/action-gh-release@v1
+      - id: release
+        uses: softprops/action-gh-release@v1
         with:
           generate_release_notes: false
 
@@ -29,7 +30,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     outputs:
-      release_url: ${{ steps.release.outputs.url }}
+      release_url: ${{ needs.create.release.outputs.url }}
 
     steps:
       - run: |
@@ -67,8 +68,7 @@ jobs:
           name: manifest
           path: release/latest*.yml
 
-      - id: release
-        uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v1
         with:
           # fail_on_unmatched_files: true
           files: |
@@ -84,6 +84,6 @@ jobs:
         if: always()
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          # nodetail: true
-          # title: "Released ${{ needs.build.outputs.release_url }}"
-          title: "${{ runner.os }} ${{ github.workflow }}"
+          nodetail: true
+          title: "Released ${{ needs.build.outputs.release_url }}"
+          # title: "${{ runner.os }} ${{ github.workflow }}"

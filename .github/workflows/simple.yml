@@ -1,0 +1,40 @@
+name: simple
+on:
+  workflow_dispatch:
+    inputs:
+      skip:
+        description: skip match
+        required: false
+      fail:
+        description: fail match
+        required: false
+
+jobs:
+  one:
+    if: ${{ inputs.skip != 'one' }}
+    runs-on: ubuntu-latest
+    steps:
+    - run: test '${{ inputs.fail }}' != one
+
+  two:
+    if: ${{ inputs.skip != 'two' }}
+    needs: one
+    runs-on: ubuntu-latest
+    steps:
+    - run: test '${{ inputs.fail }}' != two
+
+  three:
+    if: always()
+    needs: two
+    runs-on: ubuntu-latest
+    steps:
+      - uses: sarisia/actions-status-discord@v1
+        if: success()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+
+      - uses: sarisia/actions-status-discord@v1
+        if: ${{ !success() }}
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: 'failed!!!'

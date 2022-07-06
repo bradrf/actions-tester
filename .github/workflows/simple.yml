@@ -16,6 +16,12 @@ jobs:
     steps:
     - run: test '${{ inputs.fail }}' != one
 
+    - uses: sarisia/actions-status-discord@v1
+      if: ${{ always() && !success() }}
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}
+        title: 'failed!!!'
+
   two:
     if: ${{ inputs.skip != 'two' }}
     needs: one
@@ -23,18 +29,16 @@ jobs:
     steps:
     - run: test '${{ inputs.fail }}' != two
 
+    - uses: sarisia/actions-status-discord@v1
+      if: ${{ always() && !success() }}
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}
+        title: 'failed!!!'
+
   three:
-    if: always()
     needs: two
     runs-on: ubuntu-latest
     steps:
       - uses: sarisia/actions-status-discord@v1
-        if: success()
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-
-      - uses: sarisia/actions-status-discord@v1
-        if: ${{ !success() }}
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          title: 'failed!!!'

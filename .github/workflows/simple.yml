@@ -1,8 +1,8 @@
 name: simple
 on:
   push:
-    tags-ignore:
-      - "v*.*.*-barf.*"
+    tags:
+      - "!v*.*.*-barf.*"
     paths:
       - "**.js"
   workflow_dispatch:

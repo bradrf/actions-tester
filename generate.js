@@ -3,6 +3,8 @@ const os = require('node:os');
 const path = require('node:path');
 const crypto = require('node:crypto');
 
+console.log('platform:', os.platform());
+
 let ext;
 switch (os.platform()) {
   case 'darwin':

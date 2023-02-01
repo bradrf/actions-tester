@@ -2,11 +2,7 @@ name: simple
 on:
   push:
     branches:
-      - "**"
-    tags-ignore:
-      - "hello-**"
-    paths:
-      - "**.js"
+      - "main"
 
 jobs:
   build:
@@ -15,8 +11,13 @@ jobs:
       - uses: actions/checkout@v2
       - run: echo "name=hello-${RANDOM}" >> $GITHUB_OUTPUT
         id: tag
-      - run: git tag "${{ steps.tag.outputs.name }}"
-      - run: git push --tags
-      - run: gh release create "${{ steps.tag.outputs.name }}"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: echo "barf sees ref=${{ github.ref }} name=${{ github.ref_name }}"
+
+      - run: env
+
+      # - run: git tag "${{ steps.tag.outputs.name }}"
+      # - run: git push --tags
+      # - run: gh release create "${{ steps.tag.outputs.name }}"
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

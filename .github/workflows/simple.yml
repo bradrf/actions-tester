@@ -13,8 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: git tag "hello-${RANDOM}"
+      - run: echo "name=hello-${RANDOM}" >> $GITHUB_OUTPUT
+        id: tag
+      - run: git tag "${{ steps.tag.outputs.name }}"
       - run: git push --tags
-      - run: gh workflow run create-release
+      - run: gh release create "${{ steps.tag.outputs.name }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

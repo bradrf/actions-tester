@@ -1,8 +1,6 @@
 name: create-release
 on:
   push:
-    branches:
-      - "**"
     tags:
       - "hello-**"
 

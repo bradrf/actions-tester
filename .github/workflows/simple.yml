@@ -16,6 +16,14 @@ jobs:
 
       - run: env
 
+      - name: Get Pull Request Number
+        id: pr
+        run: echo "num=$(gh pr view --json number -q .number || echo "")" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: "barf num? ${{ steps.pr.outputs.num }}"
+
       # - run: git tag "${{ steps.tag.outputs.name }}"
       # - run: git push --tags
       # - run: gh release create "${{ steps.tag.outputs.name }}"

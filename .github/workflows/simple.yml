@@ -22,7 +22,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - run: "barf num? ${{ steps.pr.outputs.num }}"
+      - run: "echo barf num? ${{ steps.pr.outputs.num }}"
 
       # - run: git tag "${{ steps.tag.outputs.name }}"
       # - run: git push --tags

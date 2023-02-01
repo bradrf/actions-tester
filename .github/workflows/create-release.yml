@@ -1,0 +1,11 @@
+name: create-release
+on:
+  push:
+    tags:
+      - "hello-**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: softprops/action-gh-release@v1

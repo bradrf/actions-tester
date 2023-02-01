@@ -4,12 +4,13 @@ on:
     branches:
       - "**"
     tags-ignore:
-      - "**"
+      - "hello-**"
     paths:
       - "**.js"
 
 jobs:
-  one:
+  build:
     runs-on: ubuntu-latest
     steps:
       - run: echo hello
+      - run: git tag "hello-${RANDOM}"

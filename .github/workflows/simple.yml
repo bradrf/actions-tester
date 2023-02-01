@@ -1,62 +1,15 @@
 name: simple
 on:
   push:
+    branches:
+      - "**"
+    tags-ignore:
+      - "silly-**"
     paths:
       - "**.js"
-    tags-ignore:
-      - "v*.*.*-barf.*"
-  workflow_dispatch:
-    inputs:
-      skip:
-        description: skip match
-        required: false
-      fail:
-        description: fail match
-        required: false
 
 jobs:
   one:
-    if: ${{ inputs.skip != 'one' }}
     runs-on: ubuntu-latest
     steps:
-    - run: test '${{ inputs.fail }}' != one
-
-    - uses: softprops/action-gh-release@v1
-
-    - uses: sarisia/actions-status-discord@v1
-      if: ${{ always() && !success() }}
-      with:
-        webhook: ${{ secrets.DISCORD_WEBHOOK }}
-        title: 'failed!!!'
-
-  two:
-    if: ${{ inputs.skip != 'two' }}
-    needs: one
-    runs-on: ubuntu-latest
-    steps:
-    - run: test '${{ inputs.fail }}' != two
-
-    - run: echo helloo > foo.txt
-
-    - uses: softprops/action-gh-release@v1
-      with:
-        files: foo.txt
-
-    - uses: sarisia/actions-status-discord@v1
-      if: ${{ always() && !success() }}
-      with:
-        webhook: ${{ secrets.DISCORD_WEBHOOK }}
-        title: 'failed!!!'
-
-  three:
-    needs: two
-    runs-on: ubuntu-latest
-    steps:
-      - id: release
-        uses: softprops/action-gh-release@v1
-
-      - uses: sarisia/actions-status-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          nodetail: true
-          title: Released ${{ steps.release.outputs.url }}
+      - run: echo hello

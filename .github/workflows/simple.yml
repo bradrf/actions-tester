@@ -15,6 +15,3 @@ jobs:
       - uses: actions/checkout@v2
       - run: git tag "hello-${RANDOM}"
       - run: git push --tags
-      - run: gh workflow run create-release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

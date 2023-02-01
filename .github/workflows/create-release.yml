@@ -1,8 +1,7 @@
 name: create-release
 on:
-  push:
-    tags:
-      - "hello-**"
+  # triggered manually by other workflows
+  workflow_dispatch:
 
 jobs:
   build:

@@ -4,7 +4,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 
 console.log('platform:', os.platform());
-console.log('run:', 7);
+console.log('run:', 8);
 
 let ext;
 switch (os.platform()) {

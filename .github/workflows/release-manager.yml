@@ -15,6 +15,8 @@ jobs:
       - run: env
       - run: echo "context=${{ inputs.context }}"
 
+      - uses: actions/checkout@v2
+
       - run: echo "id=${{ github.ref_name == 'production' && 'prd' || 'stg' }}" >> $GITHUB_OUTPUT
         id: branch
 

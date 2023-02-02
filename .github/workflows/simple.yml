@@ -16,11 +16,16 @@ jobs:
 
       - run: env
 
-      - uses: ./.github/workflows/release-manager.yml
 
-      - uses: ./.github/workflows/release-manager.yml
-        with:
-          context: hello my friends!
+  without-ctx:
+    needs: build
+    uses: ./.github/workflows/release-manager.yml
+
+  with-ctx:
+    needs: build
+    uses: ./.github/workflows/release-manager.yml
+    with:
+      context: hello my friends!
 
       # - run: git tag "${{ steps.tag.outputs.name }}"
       # - run: git push --tags

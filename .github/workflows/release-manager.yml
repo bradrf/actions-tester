@@ -30,3 +30,5 @@ jobs:
           ||
           ( gh release view "${{ steps.tag.outputs.name }}" --json body -q .body ; echo "* ${{ inputs.context }}" )
           | gh release edit "${{ steps.tag.outputs.name }}" -F -
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -14,13 +14,11 @@ jobs:
 
       - run: echo "barf sees ref=${{ github.ref }} name=${{ github.ref_name }}"
 
+      - run: echo "APP_NAME=lessor-stg" >> $GITHUB_ENV
       - run: env
 
-      - run: echo "name=lessor-stg" >> $GITHUB_OUTPUT
-        id: app
-
       - run: >-
-          heroku releases:info -a ${{ steps.app.outputs.name }} --json > relinfo.json
+          heroku releases:info -a $APP_NAME --json > relinfo.json
           && cat relinfo.json
         env:
           HEROKU_API_KEY: ${{ secrets.LESSOR_HEROKU_API_KEY }}
@@ -29,11 +27,11 @@ jobs:
         run: |
           cat relinfo.json | jq -r .id
           full_id=$(cat relinfo.json | jq -r .id)
-          echo "full_id=$full_id" >> $$GITHUB_OUTPUT
-          echo "short_id=$(echo $full_id | cut -d- -f1)" >> $GITHUB_OUTPUT
-        id: rel
+          echo "FULL_ID=$full_id" >> $$GITHUB_ENV
+          echo "SHORT_ID=$(echo $full_id | cut -d- -f1)" >> $GITHUB_ENV
+          echo barfdone
 
-      - run: echo "barf sees ${{ steps.rel.outputs.short_id }} and ${{ steps.rel.outputs.full_id }}"
+      - run: echo "barf sees $SHORT_ID and $FULL_ID"
 
   # fake-lessor:
   #   needs: build

@@ -3,18 +3,21 @@ on:
   # invoked from other workflows
   workflow_call:
     inputs:
-      context:
-        required: true
+      message:
         type: string
+        required: true
+      deploy_icon:
+        type: string
+        required: false
+      deploy_link:
+        type: string
+        required: false
 
 jobs:
   release:
     if: ${{ github.ref_name == 'main' || github.ref_name == 'production' }}
     runs-on: ubuntu-latest
     steps:
-      - run: env
-      - run: echo "context=${{ inputs.context }} and refname=${{ github.ref_name }}"
-
       - uses: actions/checkout@v2
 
       - run: echo "id=${{ github.ref_name == 'production' && 'prd' || 'stg' }}" >> $GITHUB_OUTPUT
@@ -34,9 +37,21 @@ jobs:
 
       - name: Create or update ${{ steps.tag.outputs.name }}
         run: >
-          gh release create "${{ steps.tag.outputs.name }}" -t "${{ steps.title.outputs.name }}" -n "* ${{ inputs.context }}"
+          printf "url=";
+          gh release create "${{ steps.tag.outputs.name }}" -t "${{ steps.title.outputs.name }}" -n "* ${{ inputs.message }}"
           ||
-          ( gh release view "${{ steps.tag.outputs.name }}" --json body -q .body ; echo "* ${{ inputs.context }}" )
-          | gh release edit "${{ steps.tag.outputs.name }}" -F -
+          ( gh release view "${{ steps.tag.outputs.name }}" --json body -q .body ; echo "* ${{ inputs.message }}" )
+          | gh release edit "${{ steps.tag.outputs.name }}" -F - >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ github.token }}
+        id: rel
+
+      - uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: devops-${{ github.ref_name == 'production' && 'prd' || 'nonprd' }}
+          SLACK_ICON: ${{ inputs.deploy_icon }}
+          SLACK_USERNAME: relmgr
+          SLACK_TITLE: "${{ inputs.message }} (${{ steps.title.outputs.name }})"
+          SLACK_WEBHOOK: ${{ secrets.RELEASE_SLACK_WEBHOOK }}
+          SLACK_FOOTER: ${{ inputs.deploy_link || steps.rel.outputs.url }}
+          MSG_MINIMAL: ref,commit

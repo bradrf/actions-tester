@@ -13,12 +13,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: env
-      - run: echo "context=${{ inputs.context }}"
+      - run: echo "context=${{ inputs.context }} and refname=${{ github.ref_name }}"
 
       - uses: actions/checkout@v2
 
       - run: echo "id=${{ github.ref_name == 'production' && 'prd' || 'stg' }}" >> $GITHUB_OUTPUT
         id: branch
+
+      - run: echo "name=${{ github.ref_name == 'production' && 'Production' || 'Staging' }}" >> $GITHUB_OUTPUT
+        id: deploy
 
       - run: echo "short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
         id: ref
@@ -26,9 +29,12 @@ jobs:
       - run: echo "name=${{ steps.branch.outputs.id }}-release-${{ steps.ref.outputs.short }}" >> $GITHUB_OUTPUT
         id: tag
 
+      - run: echo "name=${{ steps.deploy.outputs.name }} release $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_OUTPUT
+        id: title
+
       - name: Create or update ${{ steps.tag.outputs.name }}
         run: >
-          gh release create "${{ steps.tag.outputs.name }}" -n "* ${{ inputs.context }}"
+          gh release create "${{ steps.tag.outputs.name }}" -t "${{ steps.title.outputs.name }}" -n "* ${{ inputs.context }}"
           ||
           ( gh release view "${{ steps.tag.outputs.name }}" --json body -q .body ; echo "* ${{ inputs.context }}" )
           | gh release edit "${{ steps.tag.outputs.name }}" -F -

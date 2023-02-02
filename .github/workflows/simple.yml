@@ -21,13 +21,13 @@ jobs:
     needs: build
     uses: ./.github/workflows/release-manager.yml
     with:
-      context: once in a lifetime
+      context: lessor deployed as cb123abc17
 
   with-ctx:
     needs: build
     uses: ./.github/workflows/release-manager.yml
     with:
-      context: hello my friends!
+      context: web-ui deployed as ${{ github.ref }}
 
       # - run: git tag "${{ steps.tag.outputs.name }}"
       # - run: git push --tags

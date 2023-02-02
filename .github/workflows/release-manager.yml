@@ -18,42 +18,31 @@ on:
 
 jobs:
   release:
-    if: ${{ github.ref_name == 'main' || github.ref_name == 'production' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
-      - run: echo "id=${{ github.ref_name == 'production' && 'prd' || 'stg' }}" >> $GITHUB_OUTPUT
-        id: branch
+      - run: echo "BRANCH_ID=${{ github.ref_name == 'production' && 'prd' || 'stg' }}" >> $GITHUB_ENV
+      - run: echo "DEPLOY_NAME=${{ github.ref_name == 'production' && 'Production' || 'Staging' }}" >> $GITHUB_ENV
+      - run: echo "SHORT_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+      - run: echo "TAG_NAME=release-$BRANCH_ID-$SHORT_REF" >> $GITHUB_ENV
+      - run: echo "TITLE=$DEPLOY_NAME release $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
 
-      - run: echo "name=${{ github.ref_name == 'production' && 'Production' || 'Staging' }}" >> $GITHUB_OUTPUT
-        id: deploy
-
-      - run: echo "short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-        id: ref
-
-      - run: echo "name=${{ steps.branch.outputs.id }}-release-${{ steps.ref.outputs.short }}" >> $GITHUB_OUTPUT
-        id: tag
-
-      - run: echo "name=${{ steps.deploy.outputs.name }} release $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_OUTPUT
-        id: title
-
-      - name: Create or update ${{ steps.tag.outputs.name }}
-        run: >
-          gh release create "${{ steps.tag.outputs.name }}" -t "${{ steps.title.outputs.name }}" -n "* ${{ inputs.message }}"
+      - name: Create or update $TAG_NAME
+        run: >-
+          gh release create "$TAG_NAME" -t "$TITLE" -n "* ${{ inputs.message }}"
           ||
-          ( gh release view "${{ steps.tag.outputs.name }}" --json body -q .body ; echo "* ${{ inputs.message }}" )
-          | gh release edit "${{ steps.tag.outputs.name }}" -F -
+          ( gh release view "$TAG_NAME" --json body -q .body ; echo "* ${{ inputs.message }}" )
+          | gh release edit "$TAG_NAME" -F -
         env:
           GH_TOKEN: ${{ github.token }}
-        id: rel
 
       - uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_CHANNEL: devops-${{ github.ref_name == 'production' && 'prd' || 'nonprd' }}
           SLACK_ICON: ${{ inputs.deploy_icon }}
           SLACK_USERNAME: release-manager
-          SLACK_TITLE: "${{ inputs.message }} (${{ steps.title.outputs.name }})"
+          SLACK_TITLE: "${{ inputs.message }} ($TITLE)"
           SLACK_WEBHOOK: ${{ secrets.slack_webhook }}
           SLACK_FOOTER: ${{ inputs.deploy_link }}
           MSG_MINIMAL: ref,commit

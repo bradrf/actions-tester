@@ -28,24 +28,24 @@ jobs:
 
       - run: echo "barf sees $SHORT_ID and $FULL_ID"
 
-    outputs:
-      full_id: ${{ env.FULL_ID }}
+    # outputs:
+    #   full_id: ${{ env.FULL_ID }}
 
-  silly:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "barf got ${{ needs.build.outputs.full_id }}"
-
-  # fake-lessor:
+  # silly:
   #   needs: build
-  #   uses: ./.github/workflows/release-manager.yml
-  #   with:
-  #     message: lessor deployed as ceb927dd
-  #     deploy_icon: https://brand.heroku.com/static/media/heroku-logo-stroke-gradient.bb410472.svg
-  #     deploy_link: https://dashboard.heroku.com/apps/lessor-stg/activity/releases/ceb927dd-bef1-4edf-b7bc-12484b0a6fba
-  #   secrets:
-  #     slack_webhook: ${{ secrets.RELEASE_SLACK_WEBHOOK }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - run: echo "barf got ${{ needs.build.outputs.full_id }}"
+
+  release:
+    needs: build
+    uses: ./.github/workflows/release-manager.yml
+    with:
+      message: Lessor deployed as $SHORT_ID
+      deploy_icon: https://brand.heroku.com/static/media/heroku-logo-stroke-gradient.bb410472.svg
+      deploy_link: https://dashboard.heroku.com/apps/lessor-stg/activity/releases/ceb927dd-bef1-4edf-b7bc-12484b0a6fba
+    secrets:
+      slack_webhook: ${{ secrets.RELEASE_SLACK_WEBHOOK }}
 
   # fake-web-ui:
   #   needs: build

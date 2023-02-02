@@ -29,7 +29,7 @@ jobs:
       - run: echo "barf sees $SHORT_ID and $FULL_ID"
 
     outputs:
-      full_id: $FULL_ID
+      full_id: ${{ env.FULL_ID }}
 
   silly:
     needs: build

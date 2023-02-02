@@ -28,8 +28,8 @@ jobs:
 
       - run: echo "barf sees $SHORT_ID and $FULL_ID"
 
-    # outputs:
-    #   full_id: ${{ env.FULL_ID }}
+    outputs:
+      full_id: ${{ env.FULL_ID }}
 
   # silly:
   #   needs: build
@@ -41,7 +41,7 @@ jobs:
     needs: build
     uses: ./.github/workflows/release-manager.yml
     with:
-      message: Lessor deployed as ${{ env.SHORT_ID }}
+      message: Lessor deployed as ${{ needs.build.outputs.full_id }}
       deploy_icon: https://brand.heroku.com/static/media/heroku-logo-stroke-gradient.bb410472.svg
       deploy_link: https://dashboard.heroku.com/apps/lessor-stg/activity/releases/ceb927dd-bef1-4edf-b7bc-12484b0a6fba
     secrets:

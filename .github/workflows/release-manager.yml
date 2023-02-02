@@ -4,12 +4,29 @@ on:
   workflow_call:
     inputs:
       context:
-        required: false
+        required: true
         type: string
 
 jobs:
-  build:
+  release:
+    if: ${{ github.ref_name == 'main' || github.ref_name == 'production' }}
     runs-on: ubuntu-latest
     steps:
       - run: env
       - run: echo "context=${{ inputs.context }}"
+
+      - run: echo "id=${{ github.ref_name == 'production' && 'prd' || 'stg' }}" >> $GITHUB_OUTPUT
+        id: branch
+
+      - run: echo "short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        id: ref
+
+      - run: echo "name=${{ steps.branch.outputs.id }}-release-${{ steps.ref.outputs.short }}" >> $GITHUB_OUTPUT
+        id: tag
+
+      - name: Create or update ${{ steps.tag.outputs.name }}
+        run: >
+          gh release create "${{ steps.tag.outputs.name }}" -n "* ${{ inputs.context }}"
+          ||
+          ( gh release view "${{ steps.tag.outputs.name }}" --json body -q .body ; echo "* ${{ inputs.context }}" )
+          | gh release edit "${{ steps.tag.outputs.name }}" -F -

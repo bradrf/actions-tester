@@ -20,6 +20,8 @@ jobs:
   without-ctx:
     needs: build
     uses: ./.github/workflows/release-manager.yml
+    with:
+      context: once in a lifetime
 
   with-ctx:
     needs: build

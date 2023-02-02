@@ -28,6 +28,15 @@ jobs:
 
       - run: echo "barf sees $SHORT_ID and $FULL_ID"
 
+    outputs:
+      full_id: $FULL_ID
+
+  silly:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "barf got ${{ needs.build.outputs.full_id }}"
+
   # fake-lessor:
   #   needs: build
   #   uses: ./.github/workflows/release-manager.yml

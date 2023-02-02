@@ -16,22 +16,39 @@ jobs:
 
       - run: env
 
-  fake-lessor:
-    needs: build
-    uses: ./.github/workflows/release-manager.yml
-    with:
-      message: lessor deployed as ceb927dd
-      deploy_icon: https://brand.heroku.com/static/media/heroku-logo-stroke-gradient.bb410472.svg
-      deploy_link: https://dashboard.heroku.com/apps/lessor-stg/activity/releases/ceb927dd-bef1-4edf-b7bc-12484b0a6fba
-    secrets:
-      slack_webhook: ${{ secrets.RELEASE_SLACK_WEBHOOK }}
+      - run: echo "name=lessor-stg" >> $GITHUB_OUTPUT
+        id: app
 
-  fake-web-ui:
-    needs: build
-    uses: ./.github/workflows/release-manager.yml
-    with:
-      message: web-ui deployed as ${{ github.sha }}
-      deploy_icon: https://saasvideos.io/wp-content/uploads/2019/09/Netlify.png
-      deploy_link: https://app.netlify.com/sites/3num-walrus/deploys/63d998369df8430008ef0991
-    secrets:
-      slack_webhook: ${{ secrets.RELEASE_SLACK_WEBHOOK }}
+      - run: heroku releases:info -a ${{ steps.app.outputs.name }} --json
+        env:
+          HEROKU_API_KEY: ${{ secrets.LESSOR_HEROKU_API_KEY }}
+
+      - run: echo "id=$(heroku releases:info -a ${{ steps.app.outputs.name }} --json | jq -r .id)" >> $$GITHUB_OUTPUT
+        env:
+          HEROKU_API_KEY: ${{ secrets.LESSOR_HEROKU_API_KEY }}
+        id: rel
+
+      - run: echo "id=$(echo "${{ steps.rel.outputs.id }}" | cut -d- -f1)" >> $GITHUB_OUTPUT
+        id: short
+
+      - run: echo "barf sees ${{ steps.short.outputs.id }} and ${{ steps.rel.outputs.id }}"
+
+  # fake-lessor:
+  #   needs: build
+  #   uses: ./.github/workflows/release-manager.yml
+  #   with:
+  #     message: lessor deployed as ceb927dd
+  #     deploy_icon: https://brand.heroku.com/static/media/heroku-logo-stroke-gradient.bb410472.svg
+  #     deploy_link: https://dashboard.heroku.com/apps/lessor-stg/activity/releases/ceb927dd-bef1-4edf-b7bc-12484b0a6fba
+  #   secrets:
+  #     slack_webhook: ${{ secrets.RELEASE_SLACK_WEBHOOK }}
+
+  # fake-web-ui:
+  #   needs: build
+  #   uses: ./.github/workflows/release-manager.yml
+  #   with:
+  #     message: web-ui deployed as ${{ github.sha }}
+  #     deploy_icon: https://saasvideos.io/wp-content/uploads/2019/09/Netlify.png
+  #     deploy_link: https://app.netlify.com/sites/3num-walrus/deploys/63d998369df8430008ef0991
+  #   secrets:
+  #     slack_webhook: ${{ secrets.RELEASE_SLACK_WEBHOOK }}

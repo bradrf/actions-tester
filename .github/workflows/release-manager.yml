@@ -40,11 +40,10 @@ jobs:
 
       - name: Create or update ${{ steps.tag.outputs.name }}
         run: >
-          printf "url=";
           gh release create "${{ steps.tag.outputs.name }}" -t "${{ steps.title.outputs.name }}" -n "* ${{ inputs.message }}"
           ||
           ( gh release view "${{ steps.tag.outputs.name }}" --json body -q .body ; echo "* ${{ inputs.message }}" )
-          | gh release edit "${{ steps.tag.outputs.name }}" -F - >> $GITHUB_OUTPUT
+          | gh release edit "${{ steps.tag.outputs.name }}" -F -
         env:
           GH_TOKEN: ${{ github.token }}
         id: rel
@@ -53,8 +52,8 @@ jobs:
         env:
           SLACK_CHANNEL: devops-${{ github.ref_name == 'production' && 'prd' || 'nonprd' }}
           SLACK_ICON: ${{ inputs.deploy_icon }}
-          SLACK_USERNAME: relmgr
+          SLACK_USERNAME: release-manager
           SLACK_TITLE: "${{ inputs.message }} (${{ steps.title.outputs.name }})"
           SLACK_WEBHOOK: ${{ secrets.slack_webhook }}
-          SLACK_FOOTER: ${{ inputs.deploy_link || steps.rel.outputs.url }}
+          SLACK_FOOTER: ${{ inputs.deploy_link }}
           MSG_MINIMAL: ref,commit

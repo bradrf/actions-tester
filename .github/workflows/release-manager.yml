@@ -1,0 +1,15 @@
+name: release-manager
+on:
+  # invoked from other workflows
+  workflow_call:
+    inputs:
+      context:
+        required: false
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: env
+      - run: echo "context=${{ inputs.context }}"

@@ -23,13 +23,8 @@ jobs:
         env:
           HEROKU_API_KEY: ${{ secrets.LESSOR_HEROKU_API_KEY }}
 
-      - name: Get release info
-        run: |
-          cat relinfo.json | jq -r .id
-          full_id=$(cat relinfo.json | jq -r .id)
-          echo "FULL_ID=$full_id" >> $$GITHUB_ENV
-          echo "SHORT_ID=$(echo $full_id | cut -d- -f1)" >> $GITHUB_ENV
-          echo barfdone
+      - run: echo "FULL_ID=$(cat relinfo.json | jq -r .id) >> $GITHUB_ENV
+      - run: echo "SHORT_ID=$(echo $FULL_ID | cut -d- -f1)" >> $GITHUB_ENV
 
       - run: echo "barf sees $SHORT_ID and $FULL_ID"
 

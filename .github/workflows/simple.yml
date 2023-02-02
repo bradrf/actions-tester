@@ -25,17 +25,15 @@ jobs:
         env:
           HEROKU_API_KEY: ${{ secrets.LESSOR_HEROKU_API_KEY }}
 
-      - run: >-
-          cat relinfo.json || echo "no file";
-          echo "full_id=$(heroku releases:info -a ${{ steps.app.outputs.name }} --json | jq -r .id)" >> $$GITHUB_OUTPUT
-        env:
-          HEROKU_API_KEY: ${{ secrets.LESSOR_HEROKU_API_KEY }}
+      - name: Get release info
+        run: |
+          cat relinfo.json | jq -r .id
+          full_id=$(cat relinfo.json | jq -r .id)
+          echo "full_id=$full_id" >> $$GITHUB_OUTPUT
+          echo "short_id=$(echo $full_id | cut -d- -f1)" >> $GITHUB_OUTPUT
         id: rel
 
-      - run: echo "id=$(echo "${{ steps.rel.outputs.full_id }}" | cut -d- -f1)" >> $GITHUB_OUTPUT
-        id: short
-
-      - run: echo "barf sees ${{ steps.short.outputs.id }} and ${{ steps.rel.outputs.id }}"
+      - run: echo "barf sees ${{ steps.rel.outputs.short_id }} and ${{ steps.rel.outputs.full_id }}"
 
   # fake-lessor:
   #   needs: build

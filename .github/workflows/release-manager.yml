@@ -12,6 +12,9 @@ on:
       deploy_link:
         type: string
         required: false
+    secrets:
+      slack_webhook:
+        required: true
 
 jobs:
   release:
@@ -52,6 +55,6 @@ jobs:
           SLACK_ICON: ${{ inputs.deploy_icon }}
           SLACK_USERNAME: relmgr
           SLACK_TITLE: "${{ inputs.message }} (${{ steps.title.outputs.name }})"
-          SLACK_WEBHOOK: ${{ secrets.RELEASE_SLACK_WEBHOOK }}
+          SLACK_WEBHOOK: ${{ secrets.slack_webhook }}
           SLACK_FOOTER: ${{ inputs.deploy_link || steps.rel.outputs.url }}
           MSG_MINIMAL: ref,commit

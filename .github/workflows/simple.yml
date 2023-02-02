@@ -23,6 +23,7 @@ jobs:
       message: lessor deployed as ceb927dd
       deploy_icon: https://brand.heroku.com/static/media/heroku-logo-stroke-gradient.bb410472.svg
       deploy_link: https://dashboard.heroku.com/apps/lessor-stg/activity/releases/ceb927dd-bef1-4edf-b7bc-12484b0a6fba
+      slack_webhook: ${{ secrets.RELEASE_SLACK_WEBHOOK }}
 
   fake-web-ui:
     needs: build
@@ -31,3 +32,4 @@ jobs:
       message: web-ui deployed as ${{ github.sha }}
       deploy_icon: https://saasvideos.io/wp-content/uploads/2019/09/Netlify.png
       deploy_link: https://app.netlify.com/sites/3num-walrus/deploys/63d998369df8430008ef0991
+      slack_webhook: ${{ secrets.RELEASE_SLACK_WEBHOOK }}

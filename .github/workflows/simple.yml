@@ -19,16 +19,20 @@ jobs:
       - run: echo "name=lessor-stg" >> $GITHUB_OUTPUT
         id: app
 
-      - run: heroku releases:info -a ${{ steps.app.outputs.name }} --json
+      - run: >-
+          heroku releases:info -a ${{ steps.app.outputs.name }} --json > relinfo.json
+          && cat relinfo.json
         env:
           HEROKU_API_KEY: ${{ secrets.LESSOR_HEROKU_API_KEY }}
 
-      - run: echo "id=$(heroku releases:info -a ${{ steps.app.outputs.name }} --json | jq -r .id)" >> $$GITHUB_OUTPUT
+      - run: >-
+          cat relinfo.json || echo "no file";
+          echo "full_id=$(heroku releases:info -a ${{ steps.app.outputs.name }} --json | jq -r .id)" >> $$GITHUB_OUTPUT
         env:
           HEROKU_API_KEY: ${{ secrets.LESSOR_HEROKU_API_KEY }}
         id: rel
 
-      - run: echo "id=$(echo "${{ steps.rel.outputs.id }}" | cut -d- -f1)" >> $GITHUB_OUTPUT
+      - run: echo "id=$(echo "${{ steps.rel.outputs.full_id }}" | cut -d- -f1)" >> $GITHUB_OUTPUT
         id: short
 
       - run: echo "barf sees ${{ steps.short.outputs.id }} and ${{ steps.rel.outputs.id }}"

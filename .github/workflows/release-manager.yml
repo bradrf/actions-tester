@@ -3,6 +3,10 @@ on:
   # invoked from other workflows
   workflow_call:
     inputs:
+      name:
+        type: string
+        required: false
+        default: 'release-manager'
       message:
         type: string
         required: true
@@ -37,13 +41,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-      - run: echo "barf sees ${{ inputs.message }}"
-
       # - uses: rtCamp/action-slack-notify@v2
       #   env:
       #     SLACK_CHANNEL: devops-${{ github.ref_name == 'production' && 'prd' || 'nonprd' }}
       #     SLACK_ICON: ${{ inputs.deploy_icon }}
-      #     SLACK_USERNAME: release-manager
+      #     SLACK_USERNAME: ${{ inputs.name }}
       #     SLACK_TITLE: "${{ inputs.message }} (${{ env.TITLE }})"
       #     SLACK_WEBHOOK: ${{ secrets.slack_webhook }}
       #     SLACK_FOOTER: ${{ inputs.deploy_link }}

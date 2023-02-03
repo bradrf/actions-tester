@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: echo "SHORT_ID=ceb927dd"
-      - run: echo "DEPLOY_LINK=https://dashboard.heroku.com/apps/lessor-stg/activity/releases/ceb927dd-bef1-4edf-b7bc-12484b0a6fba"
+      - run: echo "SHORT_ID=ceb927dd" >> $GITHUB_ENV
+      - run: echo "DEPLOY_LINK=https://dashboard.heroku.com/apps/lessor-stg/activity/releases/ceb927dd-bef1-4edf-b7bc-12484b0a6fba" >> $GITHUB_ENV
     outputs:
       short_id: ${{ env.SHORT_ID }}
       deploy_link: ${{ env.DEPLOY_LINK }}
@@ -22,6 +22,6 @@ jobs:
       name: lessor
       message: Lessor deployed as [${{ needs.build.outputs.short_id }}](${{ needs.build.outputs.deploy_link }})
       deploy_icon: https://brand.heroku.com/static/media/heroku-logo-stroke-gradient.bb410472.svg
-      deploy_link: ${{ env.DEPLOY_LINK }}
+      deploy_link: ${{ needs.build.outputs.deploy_link }}
     secrets:
       slack_webhook: ${{ secrets.RELEASE_SLACK_WEBHOOK }}

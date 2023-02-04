@@ -41,12 +41,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-      # - uses: rtCamp/action-slack-notify@v2
-      #   env:
-      #     SLACK_CHANNEL: devops-${{ github.ref_name == 'production' && 'prd' || 'nonprd' }}
-      #     SLACK_ICON: ${{ inputs.deploy_icon }}
-      #     SLACK_USERNAME: ${{ inputs.name }}
-      #     SLACK_TITLE: "${{ inputs.message }} (${{ env.TITLE }})"
-      #     SLACK_WEBHOOK: ${{ secrets.slack_webhook }}
-      #     SLACK_FOOTER: ${{ inputs.deploy_link }}
-      #     MSG_MINIMAL: ref,commit
+      - uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: devops-${{ github.ref_name == 'production' && 'prd' || 'nonprd' }}
+          SLACK_ICON: ${{ inputs.deploy_icon }}
+          SLACK_USERNAME: ${{ inputs.name }}
+          SLACK_TITLE: "${{ inputs.message }} (${{ env.TITLE }})"
+          SLACK_WEBHOOK: ${{ secrets.slack_webhook }}
+          SLACK_FOOTER: ${{ inputs.deploy_link }}
+          MSG_MINIMAL: ref,commit

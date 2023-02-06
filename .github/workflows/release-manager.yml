@@ -5,8 +5,7 @@ on:
     inputs:
       name:
         type: string
-        required: false
-        default: 'release-manager'
+        required: true
       deploy_icon:
         type: string
         required: false
@@ -27,13 +26,14 @@ jobs:
       - uses: actions/checkout@v2
 
       - run: echo "BRANCH_ID=${{ github.ref_name == 'production' && 'prd' || 'stg' }}" >> $GITHUB_ENV
-      - run: echo "DEPLOY_NAME=${{ github.ref_name == 'production' && 'Production' || 'Staging' }}" >> $GITHUB_ENV
+      - run: echo "DEPLOY_ENV_NAME=${{ github.ref_name == 'production' && 'Production' || 'Staging' }}" >> $GITHUB_ENV
       - run: echo "SHORT_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
       - run: echo "TAG_NAME=release-$BRANCH_ID-$SHORT_REF" >> $GITHUB_ENV
 
+      - run: echo "REL_TITLE=$DEPLOY_ENV_NAME release $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
+
       - run: echo "DEPLOY_NAME=${{ inputs.deploy_name || inputs.name }}" >> $GITHUB_ENV
-      - run: echo "REL_TITLE=$DEPLOY_NAME release $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
-      - run: echo "REL_MESSAGE=Deployed [${{ inputs.name }}](${{ inputs.deploy_link }})" >> $GITHUB_ENV
+      - run: echo "REL_MESSAGE=Deployed [$DEPLOY_NAME](${{ inputs.deploy_link }})" >> $GITHUB_ENV
 
       - name: Create or update ${{ env.TAG_NAME }}
         run: >-
@@ -51,7 +51,7 @@ jobs:
           SLACK_CHANNEL: devops-${{ github.ref_name == 'production' && 'prd' || 'nonprd' }}
           SLACK_ICON: ${{ inputs.deploy_icon }}
           SLACK_USERNAME: ${{ inputs.name }}
-          SLACK_TITLE: "Deployed ${{ inputs.name }} (${{ env.REL_TITLE }})"
+          SLACK_TITLE: "Deployed ${{ env.DEPLOY_NAME }} (${{ env.REL_TITLE }})"
           SLACK_WEBHOOK: ${{ secrets.slack_webhook }}
           SLACK_FOOTER: ${{ inputs.deploy_link }}
           MSG_MINIMAL: ref,commit

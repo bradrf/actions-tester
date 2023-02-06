@@ -11,17 +11,19 @@ jobs:
       - uses: actions/checkout@v2
       - run: echo "SHORT_ID=ceb927dd" >> $GITHUB_ENV
       - run: echo "DEPLOY_LINK=https://dashboard.heroku.com/apps/lessor-stg/activity/releases/ceb927dd-bef1-4edf-b7bc-12484b0a6fba" >> $GITHUB_ENV
+      - run: echo 'BARF=one and two and three!!!' >> $GITHUB_ENV
+      - run: echo 'barf sees $BARF'
     outputs:
       short_id: ${{ env.SHORT_ID }}
       deploy_link: ${{ env.DEPLOY_LINK }}
 
-  release:
-    needs: build
-    uses: ./.github/workflows/release-manager.yml
-    with:
-      name: lessor
-      message: Lessor deployed as <${{ needs.build.outputs.deploy_link }}|${{ needs.build.outputs.short_id }}>
-      deploy_icon: https://brand.heroku.com/static/media/heroku-logo-stroke-gradient.bb410472.svg
-      deploy_link: ${{ needs.build.outputs.deploy_link }}
-    secrets:
-      slack_webhook: ${{ secrets.RELEASE_SLACK_WEBHOOK }}
+  # release:
+  #   needs: build
+  #   uses: ./.github/workflows/release-manager.yml
+  #   with:
+  #     name: lessor
+  #     message: Lessor deployed as <${{ needs.build.outputs.deploy_link }}|${{ needs.build.outputs.short_id }}>
+  #     deploy_icon: https://brand.heroku.com/static/media/heroku-logo-stroke-gradient.bb410472.svg
+  #     deploy_link: ${{ needs.build.outputs.deploy_link }}
+  #   secrets:
+  #     slack_webhook: ${{ secrets.RELEASE_SLACK_WEBHOOK }}

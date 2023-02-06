@@ -33,7 +33,7 @@ jobs:
 
       - run: echo "DEPLOY_NAME=${{ inputs.deploy_name || inputs.name }}" >> $GITHUB_ENV
       - run: echo "REL_TITLE=$DEPLOY_NAME release $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
-      - run: echo "REL_MESSAGE=Deployed [${{ inputs.name }}](${{ deploy_link }})" >> $GITHUB_ENV
+      - run: echo "REL_MESSAGE=Deployed [${{ inputs.name }}](${{ inputs.deploy_link }})" >> $GITHUB_ENV
 
       - name: Create or update ${{ env.TAG_NAME }}
         run: >-

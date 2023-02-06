@@ -7,10 +7,10 @@ on:
         type: string
         required: false
         default: 'release-manager'
-      message:
-        type: string
-        required: true
       deploy_icon:
+        type: string
+        required: false
+      deploy_name:
         type: string
         required: false
       deploy_link:
@@ -30,23 +30,28 @@ jobs:
       - run: echo "DEPLOY_NAME=${{ github.ref_name == 'production' && 'Production' || 'Staging' }}" >> $GITHUB_ENV
       - run: echo "SHORT_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
       - run: echo "TAG_NAME=release-$BRANCH_ID-$SHORT_REF" >> $GITHUB_ENV
-      - run: echo "TITLE=$DEPLOY_NAME release $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
+
+      - run: echo "DEPLOY_NAME=${{ inputs.deploy_name || inputs.name }}" >> $GITHUB_ENV
+      - run: echo "REL_TITLE=$DEPLOY_NAME release $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
+      - run: echo "REL_MESSAGE=Deployed [${{ inputs.name }}](${{ deploy_link }})" >> $GITHUB_ENV
 
       - name: Create or update ${{ env.TAG_NAME }}
         run: >-
-          gh release create "$TAG_NAME" -t "$TITLE" -n "* ${{ inputs.message }}"
+          gh release create "$TAG_NAME" -t "$TITLE" -n "* $REL_MESSAGE"
           ||
-          ( gh release view "$TAG_NAME" --json body -q .body ; echo "* ${{ inputs.message }}" )
+          ( gh release view "$TAG_NAME" --json body -q .body ; echo "* $REL_MESSAGE" )
           | gh release edit "$TAG_NAME" -F -
         env:
           GH_TOKEN: ${{ github.token }}
+
+      - run: echo "## $REL_MESSAGE and created $REL_TITLE ($TAG_NAME) :rocket:" >> $GITHUB_STEP_SUMMARY
 
       - uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_CHANNEL: devops-${{ github.ref_name == 'production' && 'prd' || 'nonprd' }}
           SLACK_ICON: ${{ inputs.deploy_icon }}
           SLACK_USERNAME: ${{ inputs.name }}
-          SLACK_TITLE: "${{ inputs.message }} (${{ env.TITLE }})"
+          SLACK_TITLE: "Deployed ${{ inputs.name }} (${{ env.REL_TITLE }})"
           SLACK_WEBHOOK: ${{ secrets.slack_webhook }}
           SLACK_FOOTER: ${{ inputs.deploy_link }}
           MSG_MINIMAL: ref,commit

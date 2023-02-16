@@ -22,6 +22,7 @@ jobs:
       - run: echo three
 
   final:
+    if: '!failure()'
     needs: [one, two, three]
     runs-on: ubuntu-latest
     steps:

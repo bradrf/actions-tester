@@ -44,7 +44,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-      - run: echo "## $REL_MESSAGE and created $REL_TITLE ($TAG_NAME) :rocket:" >> $GITHUB_STEP_SUMMARY
+      - run: echo "### $REL_MESSAGE and created $REL_TITLE ($TAG_NAME) :rocket:" >> $GITHUB_STEP_SUMMARY
 
       - uses: rtCamp/action-slack-notify@v2
         env:

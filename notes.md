@@ -16,4 +16,7 @@
 
 * Using `if:` expects only expressions and thus there is no need to wrap with `${{}}`
 
+* You can't use ${{ env.* }} values in workflow_call outputs
+  * instead use `echo output_var=thing1 >> $GITHUB_OUTPUT`
+
 * [todo: document how tags/branches/etc work weirdly]

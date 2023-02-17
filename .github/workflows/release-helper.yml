@@ -29,5 +29,5 @@ jobs:
             kind=other
             abbrev=oth
           fi
-          echo "RELEASE_KIND=${kind}" >> $GITHUB_ENV
-          echo "RELEASE_ABBREV=${abbrev}" >> $GITHUB_ENV
+          echo "kind=${kind}" >> $GITHUB_OUTPUT
+          echo "abbrev=${abbrev}" >> $GITHUB_OUTPUT

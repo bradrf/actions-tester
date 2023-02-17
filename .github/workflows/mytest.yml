@@ -15,6 +15,10 @@ jobs:
     steps:
       - run: echo two
       - run: echo 'result="${{ github.ref_type == 'branch' }}"'
+      - run: |
+          echo hello=world >> $GITHUB_ENV
+          echo one=two >> $GITHUB_ENV
+      - run: echo 'one is ${{ env.one }} and hello ${{ env.hello }}'
 
   three:
     if: github.event_name == 'pull_request'

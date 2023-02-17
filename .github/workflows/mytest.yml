@@ -19,7 +19,7 @@ jobs:
           if [ ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'release-prd-') }} = true ]; then
             kind=production
             abbrev=prd
-          elif [ ${{ github.ref_type == 'branch' && github.ref_name = 'main' }} = true ]; then
+          elif [ ${{ github.ref_type == 'branch' && github.ref_name == 'main' }} = true ]; then
             kind=staging
             abbrev=stg
           elif [ ${{ github.event_name == 'pull_request' }} = true ]; then

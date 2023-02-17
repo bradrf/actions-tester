@@ -16,9 +16,22 @@ jobs:
       - run: echo two
       - run: echo 'result="${{ github.ref_type == 'branch' }}"'
       - run: |
-          echo hello=world >> $GITHUB_ENV
-          echo one=two >> $GITHUB_ENV
-      - run: echo 'one is ${{ env.one }} and hello ${{ env.hello }}'
+          if [ ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'release-prd-') }} = true ]; then
+            kind=production
+            abbrev=prd
+          elif [ ${{ github.ref_type == 'branch' && github.ref_name = 'main' }} = true ]; then
+            kind=staging
+            abbrev=stg
+          elif [ ${{ github.event_name == 'pull_request' }} = true ]; then
+            kind=preview
+            abbrev=pre
+          else
+            kind=other
+            abbrev=oth
+          fi
+          echo "RELEASE_KIND=${kind}" >> $GITHUB_ENV
+          echo "RELEASE_ABBREV=${abbrev}" >> $GITHUB_ENV
+      - run: echo "${{ env.RELEASE_KIND }} and ${{ env.RELEASE_ABBREV }}"
 
   three:
     if: github.event_name == 'pull_request'

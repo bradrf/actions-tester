@@ -14,13 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo two
+      - run: echo 'result="${{ github.ref_type == 'branch' }}"'
 
   three:
-    # if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - run: echo three
-      - run: cat blarg
 
   final:
     if: '!failure()'

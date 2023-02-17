@@ -22,11 +22,3 @@ runs:
         echo "RELEASE_KIND=${kind}" >> $GITHUB_ENV
         echo "RELEASE_ABBREV=${abbrev}" >> $GITHUB_ENV
       shell: bash
-
-outputs:
-  kind:
-    description: The kind of release
-    value: ${{ env.RELEASE_KIND }}
-  abbrev:
-    description: The kind of release, abbreviated
-    value: ${{ env.RELEASE_ABBREV }}

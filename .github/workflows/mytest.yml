@@ -14,6 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo two
+      - uses: actions/checkout@v3
+      - uses: ./.github/workflows/scripts/release-helper
+        id: helper
+      - run: echo 'barf sees ${{ env.RELEASE_KIND }} as ${{ env.RELEASE_ABBREV }}'
 
   three:
     if: github.event_name == 'pull_request'
@@ -21,14 +25,9 @@ jobs:
     steps:
       - run: echo three
 
-
-  final:
-    if: '!failure()'
-    needs: [one, two, three]
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo final
-      - uses: actions/checkout@v3
-      - uses: ./.github/workflows/scripts/release-helper
-        id: helper
-      - run: echo 'barf sees ${{ steps.helper.outputs.kind }} as ${{ steps.helper.outputs.abbrev }}'
+  # final:
+  #   if: '!failure()'
+  #   needs: [one, two, three]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - run: echo final

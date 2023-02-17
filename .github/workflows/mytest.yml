@@ -14,24 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo two
-      - run: echo 'result="${{ github.ref_type == 'branch' }}"'
-      - run: |
-          if [ ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'release-prd-') }} = true ]; then
-            kind=production
-            abbrev=prd
-          elif [ ${{ github.ref_type == 'branch' && github.ref_name == 'main' }} = true ]; then
-            kind=staging
-            abbrev=stg
-          elif [ ${{ github.event_name == 'pull_request' }} = true ]; then
-            kind=preview
-            abbrev=pre
-          else
-            kind=other
-            abbrev=oth
-          fi
-          echo "RELEASE_KIND=${kind}" >> $GITHUB_ENV
-          echo "RELEASE_ABBREV=${abbrev}" >> $GITHUB_ENV
-      - run: echo "${{ env.RELEASE_KIND }} and ${{ env.RELEASE_ABBREV }}"
 
   three:
     if: github.event_name == 'pull_request'
@@ -39,9 +21,13 @@ jobs:
     steps:
       - run: echo three
 
+  helper:
+    uses: ./.github/workflows/release-helper.yml
+
   final:
     if: '!failure()'
-    needs: [one, two, three]
+    needs: [one, two, three, helper]
     runs-on: ubuntu-latest
     steps:
       - run: echo final
+      - run: echo 'barf sees ${{ needs.helper.outputs.kind }} as ${{ needs.helper.outputs.abbrev }} '

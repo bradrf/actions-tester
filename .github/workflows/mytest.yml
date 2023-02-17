@@ -28,6 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo final
+      - uses: actions/checkout@v3
       - uses: ./.github/workflows/scripts/release-helper
         id: helper
       - run: echo 'barf sees ${{ steps.helper.outputs.kind }} as ${{ steps.helper.outputs.abbrev }}'

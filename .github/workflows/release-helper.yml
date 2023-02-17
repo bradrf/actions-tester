@@ -5,7 +5,10 @@ on:
     outputs:
       kind:
         description: The kind of release
-        value: ${{ fromJSON(jobs.evaluate.outputs.kind) }}
+        value: ${{ jobs.evaluate.outputs.kind }}
+      abbrev:
+        description: An abbreviation of the kind of release
+        value: ${{ jobs.evaluate.outputs.abbrev }}
 
 jobs:
   evaluate:
@@ -29,4 +32,5 @@ jobs:
           echo "RELEASE_KIND=${kind}" >> $GITHUB_ENV
           echo "RELEASE_ABBREV=${abbrev}" >> $GITHUB_ENV
     outputs:
-      kind: '{ "name": ${{ env.RELEASE_KIND }}, "abbrev": ${{ env.RELEASE_ABBREV }} }'
+      kind: ${{ env.RELEASE_KIND }}
+      abbrev: ${{ env.RELEASE_ABBREV }}

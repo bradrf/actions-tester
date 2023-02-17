@@ -21,13 +21,13 @@ jobs:
     steps:
       - run: echo three
 
-  helper:
-    uses: ./.github/workflows/release-helper.yml
 
   final:
     if: '!failure()'
-    needs: [one, two, three, helper]
+    needs: [one, two, three]
     runs-on: ubuntu-latest
     steps:
       - run: echo final
-      - run: echo 'barf sees ${{ needs.helper.outputs.kind.name }} as ${{ needs.helper.outputs.kind.abbrev }} '
+      - uses: ./.github/workflows/scripts/release-helper
+        id: helper
+      - run: echo 'barf sees ${{ steps.helper.outputs.kind }} as ${{ steps.helper.outputs.abbrev }}'

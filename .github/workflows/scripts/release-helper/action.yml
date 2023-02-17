@@ -1,0 +1,32 @@
+name: Release Helper
+description: Evaluates the state of git to determine the kind of release
+
+runs:
+  using: composite
+  steps:
+    - name: Evaluate state of ${{ github.ref_name }}
+      run: |
+        if [ ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'release-prd-') }} = true ]; then
+          kind=production
+          abbrev=prd
+        elif [ ${{ github.ref_type == 'branch' && github.ref_name == 'main' }} = true ]; then
+          kind=staging
+          abbrev=stg
+        elif [ ${{ github.event_name == 'pull_request' }} = true ]; then
+          kind=preview
+          abbrev=pre
+        else
+          kind=other
+          abbrev=oth
+        fi
+        echo "RELEASE_KIND=${kind}" >> $GITHUB_ENV
+        echo "RELEASE_ABBREV=${abbrev}" >> $GITHUB_ENV
+      shell: bash
+
+outputs:
+  kind:
+    description: The kind of release
+    value: ${{ env.RELEASE_KIND }}
+  abbrev:
+    description: The kind of release, abbreviated
+    value: ${{ env.RELEASE_ABBREV }}

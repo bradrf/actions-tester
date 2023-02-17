@@ -30,4 +30,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo final
-      - run: echo 'barf sees ${{ needs.helper.outputs.kind }} as ${{ needs.helper.outputs.abbrev }} '
+      - run: echo 'barf sees ${{ needs.helper.outputs.kind.name }} as ${{ needs.helper.outputs.kind.abbrev }} '

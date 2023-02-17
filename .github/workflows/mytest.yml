@@ -16,7 +16,6 @@ jobs:
       - run: echo two
       - uses: actions/checkout@v3
       - uses: ./.github/workflows/scripts/release-helper
-        id: helper
       - run: echo 'barf sees ${{ env.RELEASE_KIND }} as ${{ env.RELEASE_ABBREV }}'
 
   three:
@@ -25,9 +24,10 @@ jobs:
     steps:
       - run: echo three
 
-  # final:
-  #   if: '!failure()'
-  #   needs: [one, two, three]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - run: echo final
+  final:
+    if: '!failure()'
+    needs: [one, two, three]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo final
+      - run: echo 'barf sees ${{ env.RELEASE_KIND }} as ${{ env.RELEASE_ABBREV }}'

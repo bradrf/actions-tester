@@ -4,6 +4,10 @@ description: Evaluates the state of git to determine the kind of release
 runs:
   using: composite
   steps:
+    - uses: actions/cache@v3
+      with:
+        key:
+
     - name: Evaluate state of ${{ github.ref_name }}
       run: |
         if [ ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'release-prd-') }} = true ]; then
@@ -21,4 +25,10 @@ runs:
         fi
         echo "RELEASE_KIND=${kind}" >> $GITHUB_ENV
         echo "RELEASE_ABBREV=${abbrev}" >> $GITHUB_ENV
+        echo '{"kind": "'${kind}'", "abbrev": "'${abbrev}'"}' > .release
       shell: bash
+
+outputs:
+  barf:
+    description: barf
+    value: hello

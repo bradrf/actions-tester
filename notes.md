@@ -14,6 +14,8 @@
 
 * You _MUST_ use single quotes in all expressions (i.e. within `${{}}`)!
 
+* In general, prefer use of `${{ env.MYVAR }}` over `$MYVAR` in `run` bodies (the former interpolates immediately and makes debugging WAY better)
+
 * Using `if:` expects only expressions and thus there is no need to wrap with `${{}}`
 
 * You can't use ${{ env.* }} values in workflow_call outputs

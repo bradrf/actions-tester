@@ -4,10 +4,6 @@ description: Evaluates the state of git to determine the kind of release
 runs:
   using: composite
   steps:
-    - uses: actions/cache@v3
-      with:
-        key:
-
     - name: Evaluate state of ${{ github.ref_name }}
       run: |
         if [ ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'release-prd-') }} = true ]; then

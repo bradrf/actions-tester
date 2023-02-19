@@ -16,8 +16,6 @@ jobs:
       - run: echo two
       - uses: actions/checkout@v3
       - uses: ./.github/workflows/scripts/release-helper
-        id: helper
-      - run: echo 'barf sees ${{ steps.helper.outputs.barf }}'
 
   three:
     if: github.event_name == 'pull_request'

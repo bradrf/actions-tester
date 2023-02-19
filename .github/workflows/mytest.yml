@@ -1,6 +1,14 @@
 name: mytest
 on:
   push:
+    branches:
+      - "**"
+    tags:
+      - "release-*"
+    paths:
+      - "**.ts"
+      - ".github/workflows/**"
+      - "!**.md"
 
 jobs:
   one:

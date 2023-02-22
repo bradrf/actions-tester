@@ -43,9 +43,9 @@ jobs:
       # slack-notify doesn't extract a valid message body for tag pushes and results in a `null` shown
       # (the EOF syntax allows for multiline commit messages to be captured into the env variable)
       - run: |
-          echo SLACK_MESSAGE<<EOF >> $GITHUB_ENV
+          echo 'SLACK_MESSAGE<<EOF' >> $GITHUB_ENV
           git log -1 --pretty=format:%B ${{ github.sha }} >> $GITHUB_ENV
-          echo EOF >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
         if: github.ref_type == 'tag'
 
       - uses: rtCamp/action-slack-notify@v2

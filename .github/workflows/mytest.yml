@@ -16,8 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo one
-      # - uses: actions/checkout@v3
-      # - uses: ./.github/workflows/scripts/release-helper
+      - uses: actions/checkout@v3
+      - uses: ./.github/workflows/scripts/release-helper
 
   release:
     needs: one

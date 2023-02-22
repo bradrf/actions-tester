@@ -16,14 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo one
-      - run: |
-          echo 'FOO=<<EOF' >> $GITHUB_ENV
-          echo 'one' >> $GITHUB_ENV
-          echo 'two' >> $GITHUB_ENV
-          echo 'three' >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
-      - run: test
-
       # - uses: actions/checkout@v3
       # - uses: ./.github/workflows/scripts/release-helper
 
@@ -40,8 +32,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo two
-      - uses: actions/checkout@v3
-      - uses: ./.github/workflows/scripts/release-helper
+      - run: |
+          echo 'FOO=<<EOF' >> $GITHUB_ENV
+          echo 'one' >> $GITHUB_ENV
+          echo 'two' >> $GITHUB_ENV
+          echo 'three' >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+      - run: test
 
   three:
     if: github.event_name == 'pull_request'

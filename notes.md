@@ -24,3 +24,13 @@
   * INSTEAD! remember composites are executed on the _SAME_ machine and thus you can refer to any env vars set within them directly (i.e. no need to pass them as outputs!)
 
 * In the `on/push` trigger, use of `tags(-ignore)` with `paths` doesn't work. You have to also include `branches` (e.g. with a value of `**` to include any branch name when trying to match a path).
+
+* Multiline ENV values work like this:
+    ```
+          - run: |
+          echo 'FOO<<EOF' >> $GITHUB_ENV
+          echo 'one' >> $GITHUB_ENV
+          echo 'two' >> $GITHUB_ENV
+          echo 'three' >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+    ```

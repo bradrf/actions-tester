@@ -38,7 +38,7 @@ jobs:
           echo 'two' >> $GITHUB_ENV
           echo 'three' >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
-      - run: test
+      - run: 'true'
 
   three:
     if: github.event_name == 'pull_request'

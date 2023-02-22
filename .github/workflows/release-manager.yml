@@ -46,13 +46,10 @@ jobs:
         run: echo "$GITHUB_CONTEXT" | jq
 
       # slack-notify doesn't extract a valid message body for tag pushes and results in a `null` shown
-      - run: |
-          git log -1
-          echo "SLACK_MESSAGE=$(git log -1 --oneline ${{ env.COMMIT_SHA }})" >> $GITHUB_ENV
+      - run: echo "SLACK_MESSAGE=$(git log -1 --pretty=format:'%B' ${{ github.sha }})" >> $GITHUB_ENV
         if: github.ref_type == 'tag'
 
       - run: 'true'
-
 
       # - uses: rtCamp/action-slack-notify@v2
       #   env:

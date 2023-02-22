@@ -6,8 +6,6 @@ runs:
   steps:
     - name: Evaluate state of ${{ github.ref_name }}
       run: |
-        echo barf
-        git tag -l -n "${tag}" | sed 's/^[^ ]* *//'
         if [ ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'release-prd-') }} = true ]; then
           kind=production
           abbrev=prd
@@ -24,13 +22,13 @@ runs:
         if [ ${{ github.ref_type == 'tag' }} = true ]; then
           tag='${{ github.ref_name }}'
           if [ ${{ startsWith(github.ref_name, 'release-') }} = true ]; then
-            echo "RELEASE_TARGETS=$(git tag -l -n "${tag}" | sed 's/^[^ ]* *//')" >> $GITHUB_ENV
+            # Retrieve the annotated tag (see https://github.com/actions/checkout/issues/290)
+            git fetch origin '+${{ github.ref }}:${{ github.ref }}'
+            git tag -l -n1 "${{ github.ref_name }}" | sed 's/^[^ ]* *//'
+            echo "RELEASE_TARGETS=$(git tag -l -n "${{ github.ref_name }}" | sed 's/^[^ ]* *//')" >> $GITHUB_ENV
           fi
         else
-          tag="release-${kind}-${GITHUB_SHA:0:7}"
-          if [ "${kind}" = 'staging' ]; then
-            echo 'RELEASE_TARGETS=any' >> $GITHUB_ENV
-          fi
+          tag="release-${abbrev}-${GITHUB_SHA:0:7}"
         fi
         echo "RELEASE_KIND=${kind}" >> $GITHUB_ENV
         echo "RELEASE_ABBREV=${abbrev}" >> $GITHUB_ENV

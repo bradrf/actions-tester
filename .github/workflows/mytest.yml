@@ -16,8 +16,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo one
-      - uses: actions/checkout@v3
-      - uses: ./.github/workflows/scripts/release-helper
+      # - uses: actions/checkout@v3
+      # - uses: ./.github/workflows/scripts/release-helper
+
+  release:
+    needs: one
+    uses: ./.github/workflows/release-manager.yml
+    with:
+      name: barf
+    secrets:
+      slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
 
   two:
     if: github.ref_name == 'main'

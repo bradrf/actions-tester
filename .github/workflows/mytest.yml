@@ -33,18 +33,21 @@ jobs:
     steps:
       - run: echo two
       - run: |
-          echo 'FOO<<EOF' >> $GITHUB_ENV
-          echo 'one' >> $GITHUB_ENV
-          echo 'two' >> $GITHUB_ENV
-          echo 'three' >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
+          echo SLACK_MESSAGE<<EOF >> $GITHUB_ENV
+          git log -1 --pretty=format:%B ${{ github.sha }} >> $GITHUB_ENV
+          echo EOF >> $GITHUB_ENV
+      # echo 'FOO<<EOF' >> $GITHUB_ENV
+      # echo 'one' >> $GITHUB_ENV
+      # echo 'two' >> $GITHUB_ENV
+      # echo 'three' >> $GITHUB_ENV
+      # echo 'EOF' >> $GITHUB_ENV
       - run: 'true'
 
-  three:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo three
+  # three:
+  #   if: github.event_name == 'pull_request'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - run: echo three
 
   # final:
   #   if: '!failure()'

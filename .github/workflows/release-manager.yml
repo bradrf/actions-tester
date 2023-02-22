@@ -49,14 +49,12 @@ jobs:
       - run: echo "SLACK_MESSAGE=$(git log -1 --pretty=format:'%B' ${{ github.sha }})" >> $GITHUB_ENV
         if: github.ref_type == 'tag'
 
-      - run: 'true'
-
-      # - uses: rtCamp/action-slack-notify@v2
-      #   env:
-      #     SLACK_CHANNEL: devops-${{ env.RELEASE_KIND == 'production' && 'prd' || 'nonprd' }}
-      #     SLACK_ICON: ${{ inputs.deploy_icon }}
-      #     SLACK_USERNAME: ${{ inputs.name }}
-      #     SLACK_TITLE: "Deployed ${{ env.DEPLOY_NAME }} (${{ env.REL_TITLE }})"
-      #     SLACK_WEBHOOK: ${{ secrets.slack_webhook }}
-      #     SLACK_FOOTER: ${{ inputs.deploy_link }}
-      #     MSG_MINIMAL: ref,commit
+      - uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: devops-${{ env.RELEASE_KIND == 'production' && 'prd' || 'nonprd' }}
+          SLACK_ICON: ${{ inputs.deploy_icon }}
+          SLACK_USERNAME: ${{ inputs.name }}
+          SLACK_TITLE: "Deployed ${{ env.DEPLOY_NAME }} (${{ env.REL_TITLE }})"
+          SLACK_WEBHOOK: ${{ secrets.slack_webhook }}
+          SLACK_FOOTER: ${{ inputs.deploy_link }}
+          MSG_MINIMAL: ref,commit

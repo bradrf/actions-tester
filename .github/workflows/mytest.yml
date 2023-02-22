@@ -33,7 +33,7 @@ jobs:
     steps:
       - run: echo two
       - run: |
-          echo 'FOO=<<EOF' >> $GITHUB_ENV
+          echo 'FOO<<EOF' >> $GITHUB_ENV
           echo 'one' >> $GITHUB_ENV
           echo 'two' >> $GITHUB_ENV
           echo 'three' >> $GITHUB_ENV

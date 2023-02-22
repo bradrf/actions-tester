@@ -40,11 +40,6 @@ jobs:
 
       - run: echo '### ${{ env.REL_MESSAGE }} and created ${{ env.REL_TITLE }} (${{ env.RELEASE_TAG }}) :rocket:' >> $GITHUB_STEP_SUMMARY
 
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT" | jq
-
       # slack-notify doesn't extract a valid message body for tag pushes and results in a `null` shown
       - run: echo "SLACK_MESSAGE=$(git log -1 --pretty=format:'%B' ${{ github.sha }})" >> $GITHUB_ENV
         if: github.ref_type == 'tag'

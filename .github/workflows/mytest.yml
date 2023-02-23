@@ -41,10 +41,16 @@ jobs:
       - run: echo three
 
   notify:
-    if: '!cancelled()'
     needs: [one, two, three]
-    uses: ./.github/workflows/notification-manager.yml
-    with:
-      succeeded: ${{ success() }}
-    secrets:
-      slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
+    if: '!cancelled()'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/workflows/scripts/notification-helper
+
+
+    # uses: ./.github/workflows/notification-manager.yml
+    # with:
+    #   succeeded: ${{ success() }}
+    # secrets:
+    #   slack_webhook: ${{ secrets.SLACK_WEBHOOK }}

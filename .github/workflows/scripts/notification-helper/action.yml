@@ -40,4 +40,5 @@ runs:
         SLACK_CHANNEL: devops-${{ inputs.release_kind == 'production' && 'prd' || 'nonprd' }}
         SLACK_ICON: ${{ inputs.deploy_icon }}
         SLACK_USERNAME: ${{ inputs.name }}
+        SLACK_COLOR: '#FF0000' # red
         SLACK_WEBHOOK: ${{ inputs.slack_webhook }}

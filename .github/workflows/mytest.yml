@@ -45,19 +45,11 @@ jobs:
     if: success() || failure()
     runs-on: ubuntu-latest
     steps:
-      - run: >-
-         echo FAILED=${{ needs.one.result == 'failure'
-         || needs.two.result == 'failure'
-         || needs.three.result == 'failure' }} >> $GITHUB_ENV
       - uses: actions/checkout@v3
       - uses: ./.github/workflows/scripts/notification-helper
         with:
-          failed: ${{ env.FAILED }}
+          failed: >-
+            ${{ needs.one.result == 'failure'
+             || needs.two.result == 'failure'
+             || needs.three.result == 'failure' }}
           slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
-
-
-    # uses: ./.github/workflows/notification-manager.yml
-    # with:
-    #   succeeded: ${{ success() }}
-    # secrets:
-    #   slack_webhook: ${{ secrets.SLACK_WEBHOOK }}

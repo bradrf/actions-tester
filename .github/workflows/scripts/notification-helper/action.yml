@@ -21,15 +21,18 @@ inputs:
 runs:
   using: composite
   steps:
+    - run: |
+        echo SLACK_CHANNEL=devops-${{ inputs.release_kind == 'production' && 'prd' || 'nonprd' }} >> $GITHUB_ENV
+        echo SLACK_ICON='${{ inputs.deploy_icon }}' >> $GITHUB_ENV
+        echo SLACK_USERNAME='${{ inputs.name }}' >> $GITHUB_ENV
+        echo SLACK_WEBHOOK='${{ inputs.slack_webhook }}' >> $GITHUB_ENV
+      shell: bash
+
     - name: Report success
       uses: rtCamp/action-slack-notify@v2
       if: inputs.failed != 'true'
       env:
-        SLACK_CHANNEL: devops-${{ inputs.release_kind == 'production' && 'prd' || 'nonprd' }}
-        SLACK_ICON: ${{ inputs.deploy_icon }}
-        SLACK_USERNAME: ${{ inputs.name }}
         SLACK_TITLE: "Deployed ${{ inputs.deploy_name }} (${{ inputs.release_title }})"
-        SLACK_WEBHOOK: ${{ inputs.slack_webhook }}
         SLACK_FOOTER: ${{ inputs.deploy_link }}
         MSG_MINIMAL: ref,commit
 
@@ -37,8 +40,6 @@ runs:
       uses: rtCamp/action-slack-notify@v2
       if: inputs.failed == 'true'
       env:
-        SLACK_CHANNEL: devops-${{ inputs.release_kind == 'production' && 'prd' || 'nonprd' }}
-        SLACK_ICON: ${{ inputs.deploy_icon }}
-        SLACK_USERNAME: ${{ inputs.name }}
         SLACK_COLOR: '#FF0000' # red
-        SLACK_WEBHOOK: ${{ inputs.slack_webhook }}
+        SLACK_TITLE: "Failed to deploy ${{ inputs.deploy_name }} (${{ inputs.release_title }})"
+        SLACK_FOOTER: Deployment failed!

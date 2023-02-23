@@ -32,7 +32,7 @@ jobs:
       - run: echo two
       - name: Dump GitHub context
         run: echo "${{ toJson(github) }}"
-      - run: cat foo
+      # - run: cat foo
 
   three:
     if: github.event_name == 'pull_request'

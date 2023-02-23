@@ -42,7 +42,7 @@ jobs:
 
   notify:
     needs: [one, two]
-    if: success() || failure()
+    if: needs.one.result == 'failure' || needs.two.result == 'failure' || needs.one.result == 'success' || needs.two.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

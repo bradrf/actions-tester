@@ -26,7 +26,7 @@ jobs:
   #     slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
 
   two:
-    if: github.ref_name == 'main'
+    if: github.ref_name == 'main2'
     runs-on: ubuntu-latest
     steps:
       - run: echo two

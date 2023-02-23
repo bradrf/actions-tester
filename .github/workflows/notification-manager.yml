@@ -3,6 +3,9 @@ on:
   # invoked from other workflows
   workflow_call:
     inputs:
+      succeeded:
+        type: boolean
+        default: false
       release_kind:
         type: string
       release_title:
@@ -19,7 +22,7 @@ on:
 
 jobs:
   success:
-    if: success()
+    if: inputs.succeeded
     runs-on: ubuntu-latest
     steps:
       - uses: rtCamp/action-slack-notify@v2
@@ -33,7 +36,7 @@ jobs:
           MSG_MINIMAL: ref,commit
 
   failure:
-    if: failure()
+    if: '!inputs.succeeded'
     runs-on: ubuntu-latest
     steps:
       - uses: rtCamp/action-slack-notify@v2

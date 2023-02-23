@@ -41,6 +41,7 @@ jobs:
       - run: echo three
 
   debug:
+    if: always()
     needs: [one, two, three]
     runs-on: ubuntu-latest
     steps:

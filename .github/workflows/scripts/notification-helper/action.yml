@@ -1,6 +1,9 @@
 name: Notification Helper
 description: Sends a Slack notification based on the current job status
 inputs:
+  failed:
+    description: string
+    default: 'true'
   release_kind:
     description: string
   release_title:
@@ -20,7 +23,7 @@ runs:
   steps:
     - name: Report success
       uses: rtCamp/action-slack-notify@v2
-      if: success()
+      if: inputs.failed != 'true'
       env:
         SLACK_CHANNEL: devops-${{ inputs.release_kind == 'production' && 'prd' || 'nonprd' }}
         SLACK_ICON: ${{ inputs.deploy_icon }}
@@ -32,7 +35,7 @@ runs:
 
     - name: Report failure
       uses: rtCamp/action-slack-notify@v2
-      if: failure()
+      if: inputs.failed == 'true'
       env:
         SLACK_CHANNEL: devops-${{ inputs.release_kind == 'production' && 'prd' || 'nonprd' }}
         SLACK_ICON: ${{ inputs.deploy_icon }}

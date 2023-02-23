@@ -40,6 +40,12 @@ jobs:
     steps:
       - run: echo three
 
+  debug:
+    needs: [one, two, three]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo '${{ needs.one.result }} ${{ needs.two.result }} ${{ needs.three.result }}'
+
   notify:
     needs: [one, two, three]
     if: >-

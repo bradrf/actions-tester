@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo one
-      - run: echo "${{ toJson(github) }}" | jq
 
   # release:
   #   needs: one
@@ -31,7 +30,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo two
-      - run: echo "${{ toJson(github) }}"
+      - name: Dump GitHub context
+        run: echo "${{ toJson(github) }}"
       - run: cat foo
 
   three:
@@ -40,10 +40,8 @@ jobs:
     steps:
       - run: echo three
 
-  final:
-    if: 'failure()'
+  notify:
     needs: [one, two, three]
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo final
-      # - uses: rtCamp/action-slack-notify@v2
+    uses: ./.github/workflows/notification-manager.yml
+    secrets:
+      slack_webhook: ${{ secrets.SLACK_WEBHOOK }}

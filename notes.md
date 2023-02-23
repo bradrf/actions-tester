@@ -1,9 +1,7 @@
 * Log a context:
     ```
       - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT" | jq
+        run: echo "${{ toJson(github) }}"
     ```
 
 * Use a final dep that can have an array of optional `needs` (runs if success() or cancel() but not failure()):

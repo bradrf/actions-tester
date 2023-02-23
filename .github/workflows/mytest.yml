@@ -16,44 +16,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo one
-      - uses: actions/checkout@v3
-      - uses: ./.github/workflows/scripts/release-helper
+      - run: echo "${{ toJson(github) }}" | jq
 
-  release:
-    needs: one
-    uses: ./.github/workflows/release-manager.yml
-    with:
-      name: barf
-    secrets:
-      slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
+  # release:
+  #   needs: one
+  #   uses: ./.github/workflows/release-manager.yml
+  #   with:
+  #     name: barf
+  #   secrets:
+  #     slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
 
   two:
     if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     steps:
       - run: echo two
-      - uses: actions/checkout@v3
-      - run: |
-          echo 'SLACK_MESSAGE<<EOF' >> $GITHUB_ENV
-          git log -1 --pretty=format:%B ${{ github.sha }} >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
-      # echo 'FOO<<EOF' >> $GITHUB_ENV
-      # echo 'one' >> $GITHUB_ENV
-      # echo 'two' >> $GITHUB_ENV
-      # echo 'three' >> $GITHUB_ENV
-      # echo 'EOF' >> $GITHUB_ENV
-      - run: 'true'
+      - run: echo "${{ toJson(github) }}"
+      - run: cat foo
 
-  # three:
-  #   if: github.event_name == 'pull_request'
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - run: echo three
+  three:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo three
 
-  # final:
-  #   if: '!failure()'
-  #   needs: [one, two, three]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - run: echo final
-  #     - run: echo 'barf sees ${{ env.RELEASE_KIND }} as ${{ env.RELEASE_ABBREV }}'
+  final:
+    if: 'failure()'
+    needs: [one, two, three]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo final
+      # - uses: rtCamp/action-slack-notify@v2

@@ -41,7 +41,7 @@ jobs:
       - run: echo three
 
   notify:
-    if: '!cancel()'
+    if: '!cancelled()'
     needs: [one, two, three]
     uses: ./.github/workflows/notification-manager.yml
     secrets:

@@ -30,39 +30,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo two
-      - name: Dump GitHub context
-        run: echo "${{ toJson(github) }}"
+      # - name: Dump GitHub context
+      #   run: echo "${{ toJson(github) }}"
       # - run: cat foo
 
-  three:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo three
-
-  debug:
-    if: always()
-    needs: [one, two, three]
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo '${{ needs.one.result }} ${{ needs.two.result }} ${{ needs.three.result }}'
+  # three:
+  #   if: github.event_name == 'pull_request'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - run: echo three
 
   notify:
-    needs: [one, two, three]
-    if: >-
-      needs.one.result == 'success'
-      || needs.two.result == 'success'
-      || needs.three.result == 'success'
-      || needs.one.result == 'failure'
-      || needs.two.result == 'failure'
-      || needs.three.result == 'failure'
+    needs: [one, two]
+    if: success() || failure()
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/workflows/scripts/notification-helper
         env:
-          FAILED: >-
-            ${{ needs.one.result == 'failure'
-             || needs.two.result == 'failure'
-             || needs.three.result == 'failure' }}
+          FAILED: ${{ needs.one.result == 'failure' || needs.two.result == 'failure' }}
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}

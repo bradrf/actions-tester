@@ -57,4 +57,5 @@ jobs:
       - uses: ./.github/workflows/scripts/notification-helper
         if: env.SUCCEEDED == 'true' || env.FAILED == 'true'
         with:
+          failed: ${{ env.FAILED }}
           slack_webhook: ${{ secrets.SLACK_WEBHOOK }}

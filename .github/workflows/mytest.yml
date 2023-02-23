@@ -26,7 +26,7 @@ jobs:
   #     slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
 
   two:
-    if: github.ref_name == 'main2'
+    if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     steps:
       - run: echo two
@@ -42,20 +42,20 @@ jobs:
 
   notify:
     needs: [one, two, three]
-    if: always()
+    if: >-
+      needs.one.result == 'success'
+      || needs.two.result == 'success'
+      || needs.three.result == 'success'
+      || needs.one.result == 'failure'
+      || needs.two.result == 'failure'
+      || needs.three.result == 'failure'
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          echo SUCCEEDED=${{ needs.one.result == 'success'
-                          || needs.two.result == 'success'
-                          || needs.three.result == 'success' }} >> $GITHUB_ENV
-          echo FAILED=${{ needs.one.result == 'failure'
-                       || needs.two.result == 'failure'
-                       || needs.three.result == 'failure' }} >> $GITHUB_ENV
       - uses: actions/checkout@v3
-        if: env.SUCCEEDED == 'true' || env.FAILED == 'true'
       - uses: ./.github/workflows/scripts/notification-helper
-        if: env.SUCCEEDED == 'true' || env.FAILED == 'true'
-        with:
-          failed: ${{ env.FAILED }}
-          slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
+        env:
+          FAILED: >-
+            ${{ needs.one.result == 'failure'
+             || needs.two.result == 'failure'
+             || needs.three.result == 'failure' }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}

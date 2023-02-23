@@ -47,6 +47,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/workflows/scripts/notification-helper
+        with:
+          slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
 
 
     # uses: ./.github/workflows/notification-manager.yml

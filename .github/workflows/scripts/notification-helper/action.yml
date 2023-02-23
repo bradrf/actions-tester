@@ -1,5 +1,19 @@
 name: Notification Helper
 description: Sends a Slack notification based on the current job status
+inputs:
+  release_kind:
+    description: string
+  release_title:
+    description: string
+  deploy_icon:
+    description: string
+  deploy_name:
+    description: string
+  deploy_link:
+    description: string
+  slack_webhook:
+    description: string
+    required: true
 
 runs:
   using: composite
@@ -12,7 +26,7 @@ runs:
         SLACK_ICON: ${{ inputs.deploy_icon }}
         SLACK_USERNAME: ${{ inputs.name }}
         SLACK_TITLE: "Deployed ${{ inputs.deploy_name }} (${{ inputs.release_title }})"
-        SLACK_WEBHOOK: ${{ secrets.slack_webhook }}
+        SLACK_WEBHOOK: ${{ inputs.slack_webhook }}
         SLACK_FOOTER: ${{ inputs.deploy_link }}
         MSG_MINIMAL: ref,commit
 
@@ -23,3 +37,4 @@ runs:
         SLACK_CHANNEL: devops-${{ inputs.release_kind == 'production' && 'prd' || 'nonprd' }}
         SLACK_ICON: ${{ inputs.deploy_icon }}
         SLACK_USERNAME: ${{ inputs.name }}
+        SLACK_WEBHOOK: ${{ inputs.slack_webhook }}

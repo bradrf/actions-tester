@@ -33,6 +33,7 @@ runs:
         echo "RELEASE_KIND=${kind}" >> $GITHUB_ENV
         echo "RELEASE_ABBREV=${abbrev}" >> $GITHUB_ENV
         echo "RELEASE_TAG=${tag}" >> $GITHUB_ENV
+        echo "RELEASE_ENV=$(env | grep ^RELEASE_ | base64 -w0)" >> $GITHUB_ENV
       shell: bash
 
     # this is just for getting a chance to see what `env` values have been set before moving on

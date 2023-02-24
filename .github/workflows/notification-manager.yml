@@ -1,24 +1,65 @@
 name: Notification Manager
 on:
-  workflow_run:
-    workflows:
-      - "**"
-    types: [completed]
+  # invoked from other workflows
+  workflow_call:
+    inputs:
+      failed:
+        type: boolean
+        default: true
+      name:
+        type: string
+      deploy_name:
+        type: string
+      deploy_icon:
+        type: string
+      deploy_link:
+        type: string
+    secrets:
+      slack_webhook:
+        required: true
 
 jobs:
-  report-success:
+  report:
     runs-on: ubuntu-latest
-    if: github.event.workflow_run.conclusion == 'success'
     steps:
-      - run: echo 'The triggering workflow passed'
-      - run: echo '${{ toJSON(github.event.workflow) }}'
-      - run: echo '${{ toJSON(github.event.workflow_run) }}'
+      - uses: actions/checkout@v3
+      - uses: ./.github/workflows/scripts/release-helper
 
-  report-failure:
-    runs-on: ubuntu-latest
-    if: github.event.workflow_run.conclusion == 'failure'
-    steps:
-      - run: echo 'The triggering workflow failed'
-      - run: echo '${{ toJSON(github.event.workflow) }}'
-      - run: echo '${{ toJSON(github.event.workflow_run) }}'
+      - name: Setup common elements
+        run: |
+          echo SLACK_CHANNEL=devops-${{ env.RELEASE_KIND == 'production' && 'prd' || 'nonprd' }} >> $GITHUB_ENV
+          echo SLACK_ICON='${{ inputs.deploy_icon }}' >> $GITHUB_ENV
+          echo SLACK_USERNAME='${{ env.NAME }}' >> $GITHUB_ENV
 
+      - name: Setup success elements
+        run: |
+          echo SLACK_TITLE='Deployed ${{ inputs.deploy_name }} (${{ env.RELEASE_TITLE }})' >> $GITHUB_ENV
+          echo SLACK_FOOTER='${{ inputs.deploy_link }}' >> $GITHUB_ENV
+          echo MSG_MINIMAL=ref,commit >> $GITHUB_ENV
+        if: '!inputs.failed'
+
+      - name: Setup failure elements
+        run: |
+          echo SLACK_COLOR='#FF0000' >> $GITHUB_ENV
+          echo SLACK_TITLE='Failed to deploy ${{ inputs.deploy_name }} (${{ env.RELEASE_TITLE }})' >> $GITHUB_ENV
+          echo SLACK_FOOTER='Deployment of ${{ inputs.deploy_name }} failed!' >> $GITHUB_ENV
+        if: inputs.failed
+
+      - name: Send notification
+        uses: rtCamp/action-slack-notify@v2
+
+  # report-success:
+  #   runs-on: ubuntu-latest
+  #   if: github.event.workflow_run.conclusion == 'success'
+  #   steps:
+  #     - run: echo 'The triggering workflow passed'
+  #     - run: echo '${{ toJSON(github.event.workflow) }}'
+  #     - run: echo '${{ toJSON(github.event.workflow_run) }}'
+
+  # report-failure:
+  #   runs-on: ubuntu-latest
+  #   if: github.event.workflow_run.conclusion == 'failure'
+  #   steps:
+  #     - run: echo 'The triggering workflow failed'
+  #     - run: echo '${{ toJSON(github.event.workflow) }}'
+  #     - run: echo '${{ toJSON(github.event.workflow_run) }}'

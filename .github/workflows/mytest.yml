@@ -29,15 +29,12 @@ jobs:
     if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
       - run: echo two
-      # - name: Dump GitHub context
-      #   run: echo "${{ toJson(github) }}"
+      - uses: actions/checkout@v3
+      - uses: ./.github/workflows/scripts/release-helper
       - run: cat foo
-      - uses: ./.github/workflows/scripts/notification-helper
-        if: always()
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+    outputs:
+      release_env: ${{ env.RELEASE_ENV }}
 
   # three:
   #   if: github.event_name == 'pull_request'
@@ -45,13 +42,12 @@ jobs:
   #   steps:
   #     - run: echo three
 
-  # notify:
-  #   needs: two
-  #   if: needs.one.result == 'failure' || needs.two.result == 'failure' || needs.one.result == 'success' || needs.two.result == 'success'
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: ./.github/workflows/scripts/notification-helper
-  #       env:
-  #         FAILED: ${{ needs.one.result == 'failure' || needs.two.result == 'failure' }}
-  #         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+  release:
+    needs: two
+    if: success() || failure()
+    uses: ./.github/workflows/release-manager.yml
+    with:
+      failed: ${{ needs.two.result == 'failure' }}
+      release_env: ${{ needs.two.outputs.release_env }}
+    secrets:
+      slack_webhook: ${{ secrets.SLACK_WEBHOOK }}

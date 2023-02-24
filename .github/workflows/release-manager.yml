@@ -28,7 +28,7 @@ jobs:
       - run: echo '${{ inputs.release_env }}' | base64 -d >> $GITHUB_ENV
       - run: 'true'
 
-  release:
+  create:
     if: '!inputs.failed'
     runs-on: ubuntu-latest
     steps:

@@ -32,9 +32,16 @@ jobs:
       - run: echo two
       - uses: actions/checkout@v3
       - uses: ./.github/workflows/scripts/release-helper
+      - run: 'true'
       - run: cat foo
     outputs:
       release_env: ${{ env.RELEASE_ENV }}
+
+  rand:
+    needs: two
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'barf sees ${{ needs.two.outputs.release_env }}'
 
   # three:
   #   if: github.event_name == 'pull_request'

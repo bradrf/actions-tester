@@ -4,26 +4,23 @@ description: Sends a Slack notification based on the current job status
 runs:
   using: composite
   steps:
-    - name: Setup common elements
-      run: |
+    - run: |
         echo SLACK_CHANNEL=devops-${{ env.RELEASE_KIND == 'production' && 'prd' || 'nonprd' }} >> $GITHUB_ENV
         echo SLACK_ICON='${{ env.DEPLOY_ICON }}' >> $GITHUB_ENV
         echo SLACK_USERNAME='${{ env.NAME }}' >> $GITHUB_ENV
       shell: bash
 
-    - name: Setup success report
-      run: |
-        echo SLACK_TITLE="Deployed ${{ env.DEPLOY_NAME }} (${{ env.RELEASE_TITLE }})" >> $GITHUB_ENV
-        echo SLACK_FOOTER=${{ env.DEPLOY_LINK }} >> $GITHUB_ENV
+    - run: |
+        echo SLACK_TITLE='Deployed ${{ env.DEPLOY_NAME }} (${{ env.RELEASE_TITLE }})' >> $GITHUB_ENV
+        echo SLACK_FOOTER='${{ env.DEPLOY_LINK }}' >> $GITHUB_ENV
         echo MSG_MINIMAL=ref,commit >> $GITHUB_ENV
       shell: bash
       if: job.status == 'success'
 
-    - name: Setup failure report
-      run: |
-        SLACK_COLOR: '#FF0000' # red
-        SLACK_TITLE: "Failed to deploy ${{ env.DEPLOY_NAME }} (${{ env.RELEASE_TITLE }})"
-        SLACK_FOOTER: Deployment failed!
+    - run: |
+        echo SLACK_COLOR='#FF0000' # red >> $GITHUB_ENV
+        echo SLACK_TITLE='Failed to deploy ${{ env.DEPLOY_NAME }} (${{ env.RELEASE_TITLE }})' >> $GITHUB_ENV
+        echo SLACK_FOOTER='Deployment failed!' >> $GITHUB_ENV
       shell: bash
       if: job.status != 'success'
 

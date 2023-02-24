@@ -66,10 +66,12 @@ jobs:
           echo "- Link: ${{ env.DEPLOY_LINK }}" >> $GITHUB_STEP_SUMMARY
 
   create-or-update:
-    if: "!inputs.failed && needs.two.outputs.release_targets != ''"
+    if: '!inputs.failed'
     runs-on: ubuntu-latest
     steps:
       - run: echo '${{ inputs.release_env }}' | base64 -d >> $GITHUB_ENV
+
+      - run: if [ -z '${{ env.RELEASE_TARGETS }}' ]; then jobs.cancel; fi
 
       - name: Setup environment variables
         run: |
@@ -77,8 +79,7 @@ jobs:
           kind='${{ env.RELEASE_KIND }}';
           echo "MESSAGE=Deployed [${{ inputs.deploy_name || inputs.name }}](${{ inputs.deploy_link }})" >> $GITHUB_ENV
 
-      # must have git directory for gh to function
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3 # need git checked out for gh to work
       - name: Create or update ${{ env.RELEASE_TAG }}
         run: >-
           gh release create '${{ env.RELEASE_TAG }}' -t '${{ env.RELEASE_TITLE }}' -n '* ${{ env.MESSAGE }}'

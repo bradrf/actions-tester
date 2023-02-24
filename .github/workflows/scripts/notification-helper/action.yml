@@ -4,6 +4,9 @@ description: Sends a Slack notification based on the current job status
 runs:
   using: composite
   steps:
+    - run: echo '${{ job.status }}'
+      shell: bash
+
     - run: |
         echo SLACK_CHANNEL=devops-${{ env.RELEASE_KIND == 'production' && 'prd' || 'nonprd' }} >> $GITHUB_ENV
         echo SLACK_ICON='${{ env.DEPLOY_ICON }}' >> $GITHUB_ENV

@@ -30,7 +30,7 @@ jobs:
       - run: |
           echo SLACK_CHANNEL=devops-${{ env.RELEASE_KIND == 'production' && 'prd' || 'nonprd' }} >> $GITHUB_ENV
           echo SLACK_ICON='${{ inputs.deploy_icon }}' >> $GITHUB_ENV
-          echo SLACK_USERNAME='${{ env.NAME }}' >> $GITHUB_ENV
+          echo SLACK_USERNAME='${{ inputs.name }}' >> $GITHUB_ENV
           echo DEPLOY_INFO='${{ inputs.deploy_name || inputs.name }} (${{ env.RELEASE_TITLE }})' >> $GITHUB_ENV
 
       - if: '!inputs.failed'

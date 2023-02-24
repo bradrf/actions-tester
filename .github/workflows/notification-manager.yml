@@ -6,13 +6,19 @@ on:
     types: [completed]
 
 jobs:
-  success:
+  report-success:
     runs-on: ubuntu-latest
     if: github.event.workflow_run.conclusion == 'success'
     steps:
       - run: echo 'The triggering workflow passed'
-  failure:
+      - run: echo '${{ github.event.workflow }}'
+      - run: echo '${{ github.event.workflow_run }}'
+
+  report-failure:
     runs-on: ubuntu-latest
     if: github.event.workflow_run.conclusion == 'failure'
     steps:
       - run: echo 'The triggering workflow failed'
+      - run: echo '${{ github.event.workflow }}'
+      - run: echo '${{ github.event.workflow_run }}'
+

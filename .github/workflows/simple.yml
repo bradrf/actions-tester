@@ -13,8 +13,6 @@ jobs:
         with:
           node_version: 18
           cache: npm
-      - run: echo "SHORT_ID=ceb927dd" >> $GITHUB_ENV
-      - run: echo "DEPLOY_LINK=https://dashboard.heroku.com/apps/lessor-stg/activity/releases/ceb927dd-bef1-4edf-b7bc-12484b0a6fba" >> $GITHUB_ENV
     outputs:
       short_id: ${{ env.SHORT_ID }}
       deploy_link: ${{ env.DEPLOY_LINK }}

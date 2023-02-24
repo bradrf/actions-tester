@@ -46,7 +46,7 @@ jobs:
           git log -1 --pretty=format:%B ${{ github.sha }} >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
 
-      - if: failed
+      - if: inputs.failed
         run: |
           echo SLACK_COLOR='#FF0000' >> $GITHUB_ENV
           echo SLACK_TITLE='Failed to deploy ${{ inputs.deploy_name }} (${{ env.RELEASE_TITLE }})' >> $GITHUB_ENV

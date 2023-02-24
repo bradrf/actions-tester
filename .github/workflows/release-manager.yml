@@ -26,20 +26,45 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo '${{ inputs.release_env }}' | base64 -d >> $GITHUB_ENV
-      - run: 'true'
 
-  create:
+      - run: |
+          echo SLACK_CHANNEL=devops-${{ env.RELEASE_KIND == 'production' && 'prd' || 'nonprd' }} >> $GITHUB_ENV
+          echo SLACK_ICON='${{ inputs.deploy_icon }}' >> $GITHUB_ENV
+          echo SLACK_USERNAME='${{ env.NAME }}' >> $GITHUB_ENV
+
+      - if: '!inputs.failed'
+        run: |
+          echo SLACK_TITLE='Deployed ${{ inputs.deploy_name }} (${{ env.RELEASE_TITLE }})' >> $GITHUB_ENV
+          echo SLACK_FOOTER='${{ inputs.deploy_link }}' >> $GITHUB_ENV
+          echo MSG_MINIMAL=ref,commit >> $GITHUB_ENV
+
+      # slack-notify doesn't extract a valid message body for tag pushes and results in a `null` shown
+      # (the EOF syntax allows for multiline commit messages to be captured into the env variable)
+      - if: "!inputs.failed && github.ref_type == 'tag'"
+        run: |
+          echo 'SLACK_MESSAGE<<EOF' >> $GITHUB_ENV
+          git log -1 --pretty=format:%B ${{ github.sha }} >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+      - if: failed
+        run: |
+          echo SLACK_COLOR='#FF0000' >> $GITHUB_ENV
+          echo SLACK_TITLE='Failed to deploy ${{ inputs.deploy_name }} (${{ env.RELEASE_TITLE }})' >> $GITHUB_ENV
+          echo SLACK_FOOTER='Deployment failed!' >> $GITHUB_ENV
+
+      - uses: rtCamp/action-slack-notify@v2
+
+  create-or-update:
     if: '!inputs.failed'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/workflows/scripts/release-helper
+      - run: echo '${{ inputs.release_env }}' | base64 -d >> $GITHUB_ENV
 
       - run: >-
           kind='${{ env.RELEASE_KIND }}';
           echo "REL_TITLE="${kind^}" release $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
       - run: echo "DEPLOY_NAME=${{ inputs.deploy_name || inputs.name }}" >> $GITHUB_ENV
-      - run: echo "REL_MESSAGE=Deployed [${{ env.DEPLOY_NAME }}](${{ inputs.deploy_link }})" >> $GITHUB_ENV
+      - run: echo "REL_MESSAGE=Deployed [${{ inputs.deploy_name }}](${{ inputs.deploy_link }})" >> $GITHUB_ENV
 
       - name: Create or update ${{ env.RELEASE_TAG }}
         run: >-
@@ -51,21 +76,3 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
       - run: echo '### ${{ env.REL_MESSAGE }} and created ${{ env.REL_TITLE }} (${{ env.RELEASE_TAG }}) :rocket:' >> $GITHUB_STEP_SUMMARY
-
-      # slack-notify doesn't extract a valid message body for tag pushes and results in a `null` shown
-      # (the EOF syntax allows for multiline commit messages to be captured into the env variable)
-      - run: |
-          echo 'SLACK_MESSAGE<<EOF' >> $GITHUB_ENV
-          git log -1 --pretty=format:%B ${{ github.sha }} >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
-        if: github.ref_type == 'tag'
-
-      - uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_CHANNEL: devops-${{ env.RELEASE_KIND == 'production' && 'prd' || 'nonprd' }}
-          SLACK_ICON: ${{ inputs.deploy_icon }}
-          SLACK_USERNAME: ${{ inputs.name }}
-          SLACK_TITLE: "Deployed ${{ env.DEPLOY_NAME }} (${{ env.REL_TITLE }})"
-          SLACK_WEBHOOK: ${{ secrets.slack_webhook }}
-          SLACK_FOOTER: ${{ inputs.deploy_link }}
-          MSG_MINIMAL: ref,commit

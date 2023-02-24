@@ -35,13 +35,8 @@ jobs:
       - run: 'true'
       - run: cat foo
     outputs:
+      release_targets: doit
       release_env: ${{ env.RELEASE_ENV }}
-
-  rand:
-    needs: two
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo 'barf sees ${{ needs.two.outputs.release_env }}'
 
   # three:
   #   if: github.event_name == 'pull_request'
@@ -51,7 +46,7 @@ jobs:
 
   release:
     needs: two
-    if: success() || failure()
+    if: needs.two.outputs.release_targets != '' && (success() || failure())
     uses: ./.github/workflows/release-manager.yml
     with:
       name: barf

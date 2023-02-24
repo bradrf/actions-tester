@@ -52,6 +52,7 @@ jobs:
     uses: ./.github/workflows/release-manager.yml
     with:
       name: barf-two
+      deploy_icon: https://cdn.pixabay.com/photo/2021/05/24/09/15/ethereum-logo-6278328_960_720.png
       deploy_link: http://app.3num.co
       failed: ${{ needs.two.result == 'failure' }}
       release_env: ${{ needs.two.outputs.release_env }}

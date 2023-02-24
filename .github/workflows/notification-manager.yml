@@ -1,14 +1,17 @@
+name: Notification Manager
 on:
   workflow_run:
+    workflows:
+      - "**"
     types: [completed]
 
 jobs:
-  on-success:
+  success:
     runs-on: ubuntu-latest
     if: github.event.workflow_run.conclusion == 'success'
     steps:
       - run: echo 'The triggering workflow passed'
-  on-failure:
+  failure:
     runs-on: ubuntu-latest
     if: github.event.workflow_run.conclusion == 'failure'
     steps:

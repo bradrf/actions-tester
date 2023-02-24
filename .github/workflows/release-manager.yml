@@ -71,16 +71,17 @@ jobs:
     steps:
       - run: echo '${{ inputs.release_env }}' | base64 -d >> $GITHUB_ENV
 
-      - run: if [ -z '${{ env.RELEASE_TARGETS }}' ]; then jobs.cancel; fi
-
-      - name: Setup environment variables
+      - if: env.RELEASE_TARGETS != ''
+        name: Setup environment variables
         run: |
           echo '${{ inputs.release_env }}' | base64 -d >> $GITHUB_ENV
           kind='${{ env.RELEASE_KIND }}';
           echo "MESSAGE=Deployed [${{ inputs.deploy_name || inputs.name }}](${{ inputs.deploy_link }})" >> $GITHUB_ENV
 
       - uses: actions/checkout@v3 # need git checked out for gh to work
-      - name: Create or update ${{ env.RELEASE_TAG }}
+        if: env.RELEASE_TARGETS != ''
+      - if: env.RELEASE_TARGETS != ''
+        name: Create or update ${{ env.RELEASE_TAG }}
         run: >-
           gh release create '${{ env.RELEASE_TAG }}' -t '${{ env.RELEASE_TITLE }}' -n '* ${{ env.MESSAGE }}'
           ||
@@ -89,4 +90,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-      - run: echo '### Released ${{ env.RELEASE_TITLE }} (${{ env.RELEASE_TAG }}) :rocket:' >> $GITHUB_STEP_SUMMARY
+      - if: env.RELEASE_TARGETS != ''
+        run: echo '### Released ${{ env.RELEASE_TITLE }} (${{ env.RELEASE_TAG }}) :rocket:' >> $GITHUB_STEP_SUMMARY

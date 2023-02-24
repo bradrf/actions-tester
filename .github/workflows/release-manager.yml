@@ -53,6 +53,8 @@ jobs:
           echo SLACK_FOOTER='Deployment failed!' >> $GITHUB_ENV
 
       - uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrest.slack_webhook }}
 
   create-or-update:
     if: '!inputs.failed'

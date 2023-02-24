@@ -34,7 +34,7 @@ jobs:
 
       - if: '!inputs.failed'
         run: |
-          echo SLACK_TITLE='Deployed ${{ inputs.deploy_name }} (${{ env.RELEASE_TITLE }})' >> $GITHUB_ENV
+          echo SLACK_TITLE='Deployed ${{ inputs.deploy_name || inputs.name }} (${{ env.RELEASE_TITLE }})' >> $GITHUB_ENV
           echo SLACK_FOOTER='${{ inputs.deploy_link }}' >> $GITHUB_ENV
           echo MSG_MINIMAL=ref,commit >> $GITHUB_ENV
 
@@ -56,18 +56,27 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.slack_webhook }}
 
+      - if: '!failed'
+        run: |
+          echo "### ${{ env.SLACK_TITLE }}! :ship:" >> $GITHUB_STEP_SUMMARY
+          echo "- Log: ${{ env.DEPLOY_LOG }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Link: ${{ env.DEPLOY_LINK }}" >> $GITHUB_STEP_SUMMARY
+
   create-or-update:
-    if: '!inputs.failed'
+    if: "!inputs.failed && needs.two.outputs.release_targets != ''"
     runs-on: ubuntu-latest
     steps:
       - run: echo '${{ inputs.release_env }}' | base64 -d >> $GITHUB_ENV
 
-      - run: >-
+      - name: Setup environment variables
+        run: |
+          echo '${{ inputs.release_env }}' | base64 -d >> $GITHUB_ENV
           kind='${{ env.RELEASE_KIND }}';
           echo "REL_TITLE="${kind^}" release $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
-      - run: echo "DEPLOY_NAME=${{ inputs.deploy_name || inputs.name }}" >> $GITHUB_ENV
-      - run: echo "REL_MESSAGE=Deployed [${{ inputs.deploy_name }}](${{ inputs.deploy_link }})" >> $GITHUB_ENV
+          echo "REL_MESSAGE=Deployed [${{ inputs.deploy_name || inputs.name }}](${{ inputs.deploy_link }})" >> $GITHUB_ENV
 
+      # must have git directory for gh to function
+      - uses: actions/checkout@v3
       - name: Create or update ${{ env.RELEASE_TAG }}
         run: >-
           gh release create '${{ env.RELEASE_TAG }}' -t '${{ env.REL_TITLE }}' -n '* ${{ env.REL_MESSAGE }}'
@@ -77,4 +86,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-      - run: echo '### ${{ env.REL_MESSAGE }} and created ${{ env.REL_TITLE }} (${{ env.RELEASE_TAG }}) :rocket:' >> $GITHUB_STEP_SUMMARY
+      - run: echo '### Released ${{ env.REL_TITLE }} (${{ env.RELEASE_TAG }}) :rocket:' >> $GITHUB_STEP_SUMMARY

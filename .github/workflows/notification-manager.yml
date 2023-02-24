@@ -1,46 +1,15 @@
-name: Notification Manager
 on:
-  # invoked from other workflows
-  workflow_call:
-    inputs:
-      succeeded:
-        type: boolean
-        default: false
-      release_kind:
-        type: string
-      release_title:
-        type: string
-      deploy_icon:
-        type: string
-      deploy_name:
-        type: string
-      deploy_link:
-        type: string
-    secrets:
-      slack_webhook:
-        required: true
+  workflow_run:
+    types: [completed]
 
 jobs:
-  success:
-    if: inputs.succeeded
+  on-success:
     runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
     steps:
-      - uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_CHANNEL: devops-${{ inputs.release_kind == 'production' && 'prd' || 'nonprd' }}
-          SLACK_ICON: ${{ inputs.deploy_icon }}
-          SLACK_USERNAME: ${{ inputs.name }}
-          SLACK_TITLE: "Deployed ${{ inputs.deploy_name }} (${{ inputs.release_title }})"
-          SLACK_WEBHOOK: ${{ secrets.slack_webhook }}
-          SLACK_FOOTER: ${{ inputs.deploy_link }}
-          MSG_MINIMAL: ref,commit
-
-  failure:
-    if: '!inputs.succeeded'
+      - run: echo 'The triggering workflow passed'
+  on-failure:
     runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'failure'
     steps:
-      - uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_CHANNEL: devops-${{ inputs.release_kind == 'production' && 'prd' || 'nonprd' }}
-          SLACK_ICON: ${{ inputs.deploy_icon }}
-          SLACK_USERNAME: ${{ inputs.name }}
+      - run: echo 'The triggering workflow failed'

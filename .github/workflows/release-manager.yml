@@ -54,7 +54,7 @@ jobs:
 
       - uses: rtCamp/action-slack-notify@v2
         env:
-          SLACK_WEBHOOK: ${{ secrest.slack_webhook }}
+          SLACK_WEBHOOK: ${{ secrets.slack_webhook }}
 
   create-or-update:
     if: '!inputs.failed'

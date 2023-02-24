@@ -47,6 +47,7 @@ jobs:
     if: success() || failure()
     uses: ./.github/workflows/release-manager.yml
     with:
+      name: barf
       failed: ${{ needs.two.result == 'failure' }}
       release_env: ${{ needs.two.outputs.release_env }}
     secrets:

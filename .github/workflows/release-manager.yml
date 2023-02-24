@@ -75,18 +75,17 @@ jobs:
         run: |
           echo '${{ inputs.release_env }}' | base64 -d >> $GITHUB_ENV
           kind='${{ env.RELEASE_KIND }}';
-          echo "REL_TITLE="${kind^}" release $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
-          echo "REL_MESSAGE=Deployed [${{ inputs.deploy_name || inputs.name }}](${{ inputs.deploy_link }})" >> $GITHUB_ENV
+          echo "MESSAGE=Deployed [${{ inputs.deploy_name || inputs.name }}](${{ inputs.deploy_link }})" >> $GITHUB_ENV
 
       # must have git directory for gh to function
       - uses: actions/checkout@v3
       - name: Create or update ${{ env.RELEASE_TAG }}
         run: >-
-          gh release create '${{ env.RELEASE_TAG }}' -t '${{ env.REL_TITLE }}' -n '* ${{ env.REL_MESSAGE }}'
+          gh release create '${{ env.RELEASE_TAG }}' -t '${{ env.RELEASE_TITLE }}' -n '* ${{ env.MESSAGE }}'
           ||
-          ( gh release view '${{ env.RELEASE_TAG }}' --json body -q .body ; echo '* ${{ env.REL_MESSAGE }}' )
+          ( gh release view '${{ env.RELEASE_TAG }}' --json body -q .body ; echo '* ${{ env.MESSAGE }}' )
           | gh release edit '${{ env.RELEASE_TAG }}' -F -
         env:
           GH_TOKEN: ${{ github.token }}
 
-      - run: echo '### Released ${{ env.REL_TITLE }} (${{ env.RELEASE_TAG }}) :rocket:' >> $GITHUB_STEP_SUMMARY
+      - run: echo '### Released ${{ env.RELEASE_TITLE }} (${{ env.RELEASE_TAG }}) :rocket:' >> $GITHUB_STEP_SUMMARY

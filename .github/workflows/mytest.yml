@@ -28,7 +28,7 @@ jobs:
     uses: ./.github/workflows/release-manager.yml
     with:
       name: barf-one
-      deploy_icon: https://ethereum.org/static/c48a5f760c34dfadcf05a208dab137cc/3a0ba/eth-diamond-rainbow.webp
+      deploy_icon: https://www.maxpixel.net/static/photo/2x/Ethereum-Icon-Ethereum-Ethereum-Logo-Ethereum-Symbol-6278328.png
       failed: ${{ needs.one.result == 'failure' }}
       release_env: ${{ needs.one.outputs.release_env }}
     secrets:

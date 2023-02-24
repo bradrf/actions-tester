@@ -56,7 +56,7 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.slack_webhook }}
 
-      - if: '!failed'
+      - if: '!inputs.failed'
         run: |
           echo "### ${{ env.SLACK_TITLE }}! :ship:" >> $GITHUB_STEP_SUMMARY
           echo "- Log: ${{ env.DEPLOY_LOG }}" >> $GITHUB_STEP_SUMMARY

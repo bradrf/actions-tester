@@ -8,9 +8,10 @@ on:
         required: true
       failed:
         type: boolean
-        default: true
+        required: true
       release_env:
         type: string
+        required: true
       deploy_icon:
         type: string
       deploy_name:
@@ -40,7 +41,7 @@ jobs:
           echo DEPLOY_INFO='${{ inputs.deploy_name || inputs.name }} (${{ env.RELEASE_TITLE }})' >> $GITHUB_ENV
           echo 'SLACK_MESSAGE<<EOF' >> $GITHUB_ENV
           # git log -1 --pretty=format:%B ${{ env.RELEASE_SHA }} | sed -e "s/\`//g" >> $GITHUB_ENV
-          true >> $GITHUB_ENV
+          cat foozy | sed -e "s/\`//g" >> $GITHUB_ENV
           if [ -n '${{ inputs.deploy_url }}' ]; then
             echo 'Deployed as ${{ inputs.deploy_url }}' >> $GITHUB_ENV
           fi

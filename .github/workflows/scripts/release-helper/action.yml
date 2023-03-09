@@ -6,6 +6,7 @@ runs:
   steps:
     - name: Evaluate state of ${{ github.ref_name }}
       run: |
+        sha=${{ github.sha }}
         if [ ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'release-prd-') }} = true ]; then
           kind=production
           abbrev=prd
@@ -15,6 +16,7 @@ runs:
         elif [ ${{ github.event_name == 'pull_request' }} = true ]; then
           kind=preview
           abbrev=pre
+          sha=${{ github.event.pull_request.head.sha }}
         else
           kind=other
           abbrev=oth
@@ -30,6 +32,7 @@ runs:
         else
           tag="release-${abbrev}-${GITHUB_SHA:0:7}"
         fi
+        echo "RELEASE_SHA=${sha}" >> $GITHUB_ENV
         echo "RELEASE_KIND=${kind}" >> $GITHUB_ENV
         echo "RELEASE_ABBREV=${abbrev}" >> $GITHUB_ENV
         echo "RELEASE_TAG=${tag}" >> $GITHUB_ENV

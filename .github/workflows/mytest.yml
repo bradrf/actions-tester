@@ -1,5 +1,10 @@
 name: mytest
 on:
+  pull_request:
+    paths:
+      - "**.ts"
+      - ".github/workflows/**"
+      - "!**.md"
   push:
     branches:
       - "**"
@@ -11,8 +16,7 @@ on:
       - "!**.md"
 
 jobs:
-  one:
-    if: github.ref_type == 'tag' && startsWith(github.ref_name, 'release-')
+  run-ui-tests:
     runs-on: ubuntu-latest
     steps:
       - run: echo one
@@ -20,41 +24,14 @@ jobs:
       - uses: ./.github/workflows/scripts/release-helper
       - run: 'true'
     outputs:
-      release_env: ${{ env.RELEASE_ENV }}
-
-  release-one:
-    needs: one
-    if: success() || failure()
-    uses: ./.github/workflows/release-manager.yml
-    with:
-      name: barf-one
-      deploy_icon: https://www.maxpixel.net/static/photo/2x/Ethereum-Icon-Ethereum-Ethereum-Logo-Ethereum-Symbol-6278328.png
-      failed: ${{ needs.one.result == 'failure' }}
-      release_env: ${{ needs.one.outputs.release_env }}
-    secrets:
-      slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
+      release_kind: ${{ env.RELEASE_KIND }}
 
   two:
-    if: github.ref_name == 'main'
+    needs: run-ui-tests
+    if: >-
+      contains(needs.run-ui-tests.outputs.release_targets, 'web-messenger')
+      || needs.run-ui-tests.outputs.release_kind == 'staging'
+      || needs.run-ui-tests.outputs.release_kind == 'preview'
     runs-on: ubuntu-latest
     steps:
       - run: echo two
-      - uses: actions/checkout@v3
-      - uses: ./.github/workflows/scripts/release-helper
-      - run: 'true'
-      # - run: cat foo2
-    outputs:
-      release_env: ${{ env.RELEASE_ENV }}
-
-  release-two:
-    needs: two
-    if: success() || failure()
-    uses: ./.github/workflows/release-manager.yml
-    with:
-      name: barf-two
-      deploy_icon: https://cdn.pixabay.com/photo/2021/05/24/09/15/ethereum-logo-6278328_960_720.png
-      deploy_link: http://app.3num.co
-      failed: ${{ needs.two.result == 'failure' }}
-      release_env: ${{ needs.two.outputs.release_env }}
-    secrets:
-      slack_webhook: ${{ secrets.SLACK_WEBHOOK }}

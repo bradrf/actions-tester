@@ -13,7 +13,7 @@ runs:
         elif [ ${{ github.ref_type == 'branch' && github.ref_name == 'main' }} = true -o ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'release-stg-') }} = true ]; then
           kind=staging
           abbrev=stg
-        elif [ ${{ github.event_name == 'pull_request' }} = true ]; then
+        elif [ ${{ github.event_name == 'pull_request' }} = true -a ${{ github.event.pull_request.draft }} = false ]; then
           kind=preview
           abbrev=pre
           sha=${{ github.event.pull_request.head.sha }}

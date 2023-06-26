@@ -4,8 +4,8 @@ description: Evaluates the state of git to determine the kind of release to be r
 runs:
   using: composite
   steps:
-    - name: Evaluate state of ${{ github.ref_name }}
-      run: |
+    - run: |
+        # Evaluate state of ${{ github.ref_name }}
         sha=${{ github.sha }}
         if [ ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'release-prd-') }} = true ]; then
           kind=production

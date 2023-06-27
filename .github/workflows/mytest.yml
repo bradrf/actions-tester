@@ -26,6 +26,8 @@ jobs:
         run: echo "${{ toJson(github) }}"
 
       - name: Check for open pull requests
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           if [[ '${{ github.ref }}' = 'refs/heads/'* ]] &&
               gh pr list -R '${{ github.repository }}' -H '${{ github.ref_name }}' | grep -qvF '^no pull'; then

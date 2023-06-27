@@ -11,15 +11,11 @@ runs:
     - run: echo barf-new-1 > barf
       shell: bash
 
-    - uses: trunk-io/breakpoint@v1
-      with:
-        breakpoint-id: break
-        run: true
-        trunk-token: ${{ inputs.tt }}
-
     - run: |
         # Evaluate state of ${{ github.ref_name }}
-        if [ -n "GH_TOKEN" ]; then
+        env > barf.env
+        echo "${{ toJson(github) }}" > barf.json
+        if [ -n "$GH_TOKEN" ]; then
           echo 'barfhastoken'
         else
           echo 'barfdoes NOOT have token'
@@ -38,7 +34,7 @@ runs:
           title=pull-${{ github.event.number }}
           url=${{ github.event.pull_request._links.html.href }}
         else
-          prs=$(gh pr list -R '${{ github.repository }}' -H '${{ github.ref_name }}' --json title,isDraft,url)
+          prs=$(gh pr list -R '${{ github.repository }}' -H '${{ github.ref_name }}' --json title,isDraft,url || :)
           title=$(echo "$prs" | jq -r '.[0].title')
           isDraft=$(echo "$prs" | jq -r '.[0].isDraft')
           url=$(echo "$prs" | jq -r '.[0].url')
@@ -75,6 +71,12 @@ runs:
         echo "RELEASE_TAG=${tag}" >> $GITHUB_ENV
         echo "RELEASE_TITLE="${kind^}" release $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
       shell: bash
+
+    - uses: trunk-io/breakpoint@v1
+      with:
+        breakpoint-id: break
+        run: true
+        trunk-token: ${{ inputs.tt }}
 
     - run: echo "RELEASE_ENV=$(env | grep ^RELEASE_ | base64 -w0)" >> $GITHUB_ENV
       shell: bash

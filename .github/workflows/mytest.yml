@@ -31,12 +31,15 @@ jobs:
         run: |
           if [[ '${{ github.ref }}' = 'refs/heads/'* ]] &&
               gh pr list -R '${{ github.repository }}' -H '${{ github.ref_name }}' | grep -qvF '^no pull'; then
-            echo 'result=skip' >> $GITHUB_OUTPUT
+            echo 'RESULT=skip' >> $GITHUB_ENV
           else
-            echo 'result=continue' >> $GITHUB_OUTPUT
+            echo 'RESULT=continue' >> $GITHUB_ENV
           fi
 
       - run: 'true'
+
+    outputs:
+      result: ${{ env.RESULT}}
 
   run-ui-tests:
     needs: check-pr

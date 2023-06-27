@@ -26,15 +26,16 @@ jobs:
       - name: Dump GitHub context
         run: echo "${{ toJson(github) }}"
 
+      - uses: trunk-io/breakpoint@v1
+        with:
+          breakpoint-id: break
+          run: true
+          trunk-token: ${{ secrets.TRUNK_REPO_TOKEN }}
+
       - uses: ./.github/workflows/scripts/release-helper
 
       - run: 'true'
 
-      # - uses: trunk-io/breakpoint@v1
-      #   with:
-      #     breakpoint-id: break
-      #     run: true
-      #     trunk-token: ${{ secrets.TRUNK_REPO_TOKEN }}
 
     outputs:
       release_kind: ${{ env.RELEASE_KIND }}

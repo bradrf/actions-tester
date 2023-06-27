@@ -32,6 +32,7 @@ jobs:
           if [[ '${{ github.ref }}' = 'refs/heads/'* ]] &&
               gh pr list -R '${{ github.repository }}' -H '${{ github.ref_name }}' | grep -qvF '^no pull'; then
             echo 'RESULT=skip' >> $GITHUB_ENV
+            echo 'Skipping standard build in favor of open pull request for ${{ github.ref_name }}' >> $GITHUB_STEP_SUMMARY
           else
             echo 'RESULT=continue' >> $GITHUB_ENV
           fi

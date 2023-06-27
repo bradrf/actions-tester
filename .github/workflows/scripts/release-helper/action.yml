@@ -3,13 +3,14 @@ description: Evaluates the state of git to determine the kind of release to be r
 inputs:
   tt:
     description: trunk-io/breakpoint
-  gh_token:
-    description: GitHub Token for gh cli
 
 runs:
   using: composite
   steps:
     # names are ignored in scripts (!!) so we "log" it with a comment on the 1st line
+    - run: echo barf-new-1 > barf
+      shell: bash
+
     - uses: trunk-io/breakpoint@v1
       with:
         breakpoint-id: break
@@ -69,8 +70,6 @@ runs:
         echo "RELEASE_TAG=${tag}" >> $GITHUB_ENV
         echo "RELEASE_TITLE="${kind^}" release $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
       shell: bash
-      env:
-        GH_TOKEN: ${{ inputs.gh_token }}
 
     - run: echo "RELEASE_ENV=$(env | grep ^RELEASE_ | base64 -w0)" >> $GITHUB_ENV
       shell: bash

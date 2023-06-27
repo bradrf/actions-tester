@@ -22,6 +22,8 @@ runs:
           kind=preview
           abbrev=pre
           sha=${{ github.event.pull_request.head.sha }}
+          title=pull-${{ github.event.number }}
+          url=${{ github.event.pull_request._links.html }}
         else
           prs=$(gh pr list -R '${{ github.repository }}' -H '${{ github.ref_name }}' --json title,isDraft,url)
           title=$(echo "$prs" | jq -r '.[0].title')

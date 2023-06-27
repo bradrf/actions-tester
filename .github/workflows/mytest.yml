@@ -1,10 +1,5 @@
 name: mytest
 on:
-  pull_request:
-    paths:
-      - "**.ts"
-      - ".github/workflows/**"
-      - "!**.md"
   push:
     branches:
       - "**"
@@ -16,37 +11,7 @@ on:
       - "!**.md"
 
 jobs:
-  check-pr:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Dump env
-        run: env
-
-      - name: Dump GitHub context
-        run: echo "${{ toJson(github) }}"
-
-      - name: Check for open pull requests
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          prs=$(gh pr list -R '${{ github.repository }}' -H '${{ github.ref_name }}' --json title,url)
-          if [[ '${{ github.ref }}' = 'refs/heads/'* ]] && echo "$prs" | grep -qvF '^no pull'; then
-            echo 'RESULT=skip' >> $GITHUB_ENV
-            title=$(echo "$prs" | jq -r '.[0].title')
-            url=$(echo "$prs" | jq -r '.[0].url')
-            echo ":warning: Skipping standard build in favor of the [${title}](${url}) pull request." >> $GITHUB_STEP_SUMMARY
-          else
-            echo 'RESULT=continue' >> $GITHUB_ENV
-          fi
-
-      - run: 'true'
-
-    outputs:
-      result: ${{ env.RESULT}}
-
   run-ui-tests:
-    needs: check-pr
-    if: needs.check-pr.outputs.result == 'continue'
     runs-on: ubuntu-latest
     steps:
       - run: echo one
@@ -56,8 +21,10 @@ jobs:
         run: echo "${{ toJson(github) }}"
 
       - uses: ./.github/workflows/scripts/release-helper
-      - run: 'true'
+        # env:
+        #   GH_TOKEN: ${{ github.token }}
 
+      - run: 'true'
 
       # - uses: trunk-io/breakpoint@v1
       #   with:

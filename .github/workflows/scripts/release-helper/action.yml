@@ -1,5 +1,9 @@
 name: Release Helper
 description: Evaluates the state of git to determine the kind of release to be run (if any)
+inputs:
+  gh_token:
+    description: GitHub Token for gh cli
+    required: true
 
 runs:
   using: composite
@@ -21,6 +25,19 @@ runs:
         else
           kind=other
           abbrev=oth
+          prs=$(gh pr list -R '${{ github.repository }}' -H '${{ github.ref_name }}' --json title,isDraft,url)
+          if echo "$prs" | grep -qvF '^no pull'; then
+            title=$(echo "$prs" | jq -r '.[0].title')
+            isDraft=$(echo "$prs" | jq -r '.[0].isDraft')
+            url=$(echo "$prs" | jq -r '.[0].url')
+            if [ "$isDraft" = 'false' ]; then
+              kind=preview
+              abbrev=pre
+            else
+              prefix='Draft '
+            fi
+            echo "${prefix}Pull Request: [${title}](${url})" >> $GITHUB_STEP_SUMMARY
+          fi
         fi
         if [ ${{ github.ref_type == 'tag' }} = true ]; then
           tag='${{ github.ref_name }}'
@@ -39,6 +56,8 @@ runs:
         echo "RELEASE_TAG=${tag}" >> $GITHUB_ENV
         echo "RELEASE_TITLE="${kind^}" release $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
       shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.gh_token }}
 
     - run: echo "RELEASE_ENV=$(env | grep ^RELEASE_ | base64 -w0)" >> $GITHUB_ENV
       shell: bash

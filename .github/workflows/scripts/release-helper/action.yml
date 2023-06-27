@@ -19,6 +19,11 @@ runs:
 
     - run: |
         # Evaluate state of ${{ github.ref_name }}
+        if [ -n "GH_TOKEN" ]; then
+          echo 'barfhastoken'
+        else
+          echo 'barfdoes NOOT have token'
+        fi
         sha=${{ github.sha }}
         if [ ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'release-prd-') }} = true ]; then
           kind=production

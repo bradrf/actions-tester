@@ -34,7 +34,7 @@ jobs:
             echo 'RESULT=skip' >> $GITHUB_ENV
             title=$(echo "$prs" | jq -r '.[0].title')
             url=$(echo "$prs" | jq -r '.[0].url')
-            echo "Skipping standard build in favor of [${title}](${url}) (${{ github.ref_name }})" >> $GITHUB_STEP_SUMMARY
+            echo ":warning: Skipping standard build in favor of the [${title}](${url}) pull request." >> $GITHUB_STEP_SUMMARY
           else
             echo 'RESULT=continue' >> $GITHUB_ENV
           fi

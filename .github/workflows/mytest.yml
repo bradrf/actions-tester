@@ -1,5 +1,11 @@
 name: mytest
 on:
+  pull_request:
+    types: [ ready_for_review, reopened ]
+    paths:
+      - "**.ts"
+      - ".github/workflows/**"
+      - "!**.md"
   push:
     branches:
       - "**"

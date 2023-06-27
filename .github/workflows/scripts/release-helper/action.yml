@@ -11,7 +11,6 @@ runs:
     # names are ignored in scripts (!!) so we "log" it with a comment on the 1st line
     - run: |
         # Evaluate state of ${{ github.ref_name }}
-        set +x
         sha=${{ github.sha }}
         if [ ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'release-prd-') }} = true ]; then
           kind=production
@@ -41,10 +40,8 @@ runs:
             fi
           fi
         fi
-        echo "barf: $url"
         if [ -n "$url" ]; then
           echo "Associated pull request (${kind}): [${title}](${url})" >> $GITHUB_STEP_SUMMARY
-          echo "Associated pull request (${kind}): [${title}](${url})"
         fi
         if [ ${{ github.ref_type == 'tag' }} = true ]; then
           tag='${{ github.ref_name }}'

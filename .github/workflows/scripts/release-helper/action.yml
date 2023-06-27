@@ -1,16 +1,20 @@
 name: Release Helper
 description: Evaluates the state of git to determine the kind of release to be run (if any)
 inputs:
+  tt:
+    description: trunk-io/breakpoint
   gh_token:
     description: GitHub Token for gh cli
-    required: true
 
 runs:
   using: composite
   steps:
     # names are ignored in scripts (!!) so we "log" it with a comment on the 1st line
-    - run: env
-      shell: bash
+    - uses: trunk-io/breakpoint@v1
+      with:
+        breakpoint-id: break
+        run: true
+        trunk-token: ${{ inputs.tt }}
 
     - run: |
         # Evaluate state of ${{ github.ref_name }}

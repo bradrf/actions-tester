@@ -21,8 +21,8 @@ jobs:
         run: echo "${{ toJson(github) }}"
 
       - uses: ./.github/workflows/scripts/release-helper
-        # env:
-        #   GH_TOKEN: ${{ github.token }}
+        with:
+          gh_token: ${{ github.token }}
 
       - run: 'true'
 

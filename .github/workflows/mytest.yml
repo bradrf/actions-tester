@@ -29,10 +29,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [[ '${{ github.ref }}' = 'refs/heads/'* ]] &&
-              gh pr list -R '${{ github.repository }}' -H '${{ github.ref_name }}' | grep -qvF '^no pull'; then
+          prs=$(gh pr list -R '${{ github.repository }}' -H '${{ github.ref_name }}' --json title,url)
+          if [[ '${{ github.ref }}' = 'refs/heads/'* ]] && echo "$prs" | grep -qvF '^no pull'; then
             echo 'RESULT=skip' >> $GITHUB_ENV
-            echo 'Skipping standard build in favor of open pull request for ${{ github.ref_name }}' >> $GITHUB_STEP_SUMMARY
+            title=$(echo "$prs" | jq -r '.[0].title')
+            url=$(echo "$prs" | jq -r '.[0].url')
+            echo "Skipping standard build in favor of [${title}](${url}) (${{ github.ref_name }})" >> $GITHUB_STEP_SUMMARY
           else
             echo 'RESULT=continue' >> $GITHUB_ENV
           fi

@@ -40,7 +40,8 @@ runs:
             fi
           fi
         fi
-        if [ "$kind" = 'preview' -o "$kind" = 'draft ']; then
+        echo "barfkind: $kind"
+        if [ "$kind" = preview -o "$kind" = draft]; then
           echo "Associated pull request (${kind}): [${title}](${url})" >> $GITHUB_STEP_SUMMARY
         fi
         if [ ${{ github.ref_type == 'tag' }} = true ]; then

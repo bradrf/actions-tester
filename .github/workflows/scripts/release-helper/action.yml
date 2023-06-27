@@ -9,6 +9,9 @@ runs:
   using: composite
   steps:
     # names are ignored in scripts (!!) so we "log" it with a comment on the 1st line
+    - run: env
+      shell: bash
+
     - run: |
         # Evaluate state of ${{ github.ref_name }}
         sha=${{ github.sha }}

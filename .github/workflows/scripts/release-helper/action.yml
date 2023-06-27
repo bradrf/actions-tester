@@ -44,7 +44,7 @@ runs:
             fi
           fi
         fi
-        if [ -n "$url" ]; then
+        if [ "$url" != null ]; then
           echo "Associated pull request (${kind}): [${title}](${url})" >> $GITHUB_STEP_SUMMARY
         fi
         if [ ${{ github.ref_type == 'tag' }} = true ]; then

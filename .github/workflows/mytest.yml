@@ -16,7 +16,26 @@ on:
       - "!**.md"
 
 jobs:
+  check-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump env
+        run: env
+
+      - name: Dump GitHub context
+        run: echo "${{ toJson(github) }}"
+
+      # - name: Check for open pull requests
+      #   run: |
+      #     if gh pr list --state open --head "$(git rev-parse --abbrev-ref HEAD)"; then
+      #       echo 'pr_open=true' >> $GITHUB_OUTPUT
+      #     else
+      #       echo 'pr_open=false' >> $GITHUB_OUTPUT
+      #     fi
+
   run-ui-tests:
+    needs: check-pr
+    # if: needs.check-pr.outputs.
     runs-on: ubuntu-latest
     steps:
       - run: echo one
@@ -37,6 +56,13 @@ jobs:
 
     outputs:
       release_kind: ${{ env.RELEASE_KIND }}
+
+  barf:
+    needs: run-ui-tests
+    if: needs.run-ui-tests.outputs.barf == 'i-was-here'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo yes
 
   two:
     needs: run-ui-tests

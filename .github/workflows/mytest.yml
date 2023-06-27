@@ -32,6 +32,8 @@ jobs:
 
       - run: 'true'
 
+      - run: echo more
+
       # - uses: trunk-io/breakpoint@v1
       #   with:
       #     breakpoint-id: break

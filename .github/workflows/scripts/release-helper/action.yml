@@ -23,20 +23,24 @@ runs:
           abbrev=pre
           sha=${{ github.event.pull_request.head.sha }}
         else
-          kind=other
-          abbrev=oth
           prs=$(gh pr list -R '${{ github.repository }}' -H '${{ github.ref_name }}' --json title,isDraft,url)
-          if echo "$prs" | grep -qvF '^no pull'; then
-            title=$(echo "$prs" | jq -r '.[0].title')
-            isDraft=$(echo "$prs" | jq -r '.[0].isDraft')
-            url=$(echo "$prs" | jq -r '.[0].url')
+          title=$(echo "$prs" | jq -r '.[0].title')
+          isDraft=$(echo "$prs" | jq -r '.[0].isDraft')
+          url=$(echo "$prs" | jq -r '.[0].url')
+          if [ "$title" = null ]; then
+            kind=other
+            abbrev=oth
+          else
             if [ "$isDraft" = false ]; then
               kind=preview
               abbrev=pre
             else
+              kind=draft
+              abbrev=dft
               prefix='Draft '
             fi
-            echo "${prefix}Pull Request: [${title}](${url})" >> $GITHUB_STEP_SUMMARY
+            echo "Pull Request (${kindd}): [${title}](${url})" >> $GITHUB_STEP_SUMMARY
+            echo "Pull Request (${kindd}): [${title}](${url})"
           fi
         fi
         if [ ${{ github.ref_type == 'tag' }} = true ]; then

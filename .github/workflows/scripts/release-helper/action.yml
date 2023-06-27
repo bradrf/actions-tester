@@ -38,8 +38,6 @@ runs:
         echo "RELEASE_ABBREV=${abbrev}" >> $GITHUB_ENV
         echo "RELEASE_TAG=${tag}" >> $GITHUB_ENV
         echo "RELEASE_TITLE="${kind^}" release $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
-
-        echo "BARF=i-was-here" >> $GITHUB_OUTPUT
       shell: bash
 
     - run: echo "RELEASE_ENV=$(env | grep ^RELEASE_ | base64 -w0)" >> $GITHUB_ENV

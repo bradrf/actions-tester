@@ -15,7 +15,7 @@ runs:
           kind=staging
           abbrev=stg
         elif [ ${{ github.event_name == 'pull_request' }} = true ]; then
-          if [ '${{ github.event.pull_request.draft }}' = false ]
+          if [ '${{ github.event.pull_request.draft }}' = false ]; then
             kind=preview
             abbrev=pre
           else

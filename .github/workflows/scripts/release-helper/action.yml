@@ -37,10 +37,8 @@ runs:
             else
               kind=draft
               abbrev=dft
-              prefix='Draft '
             fi
-            echo "Pull Request (${kindd}): [${title}](${url})" >> $GITHUB_STEP_SUMMARY
-            echo "Pull Request (${kindd}): [${title}](${url})"
+            echo "Associated pull request (${kind}): [${title}](${url})" >> $GITHUB_STEP_SUMMARY
           fi
         fi
         if [ ${{ github.ref_type == 'tag' }} = true ]; then

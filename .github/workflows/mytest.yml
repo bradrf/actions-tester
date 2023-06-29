@@ -2,7 +2,7 @@ name: mytest
 on:
   push:
     branches:
-      - "**"
+      - "never/**"
     tags:
       - "release-*"
     paths:

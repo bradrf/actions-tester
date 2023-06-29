@@ -14,11 +14,11 @@ jobs:
         with:
           node-version: 18
           cache: yarn
-
-      - run: ls -al node_modules || true
       - run: yarn install --immutable
-      - run: cat node_modules/.cache/barf/hello || true
-      - run: mkdir -p node_modules/.cache/barf && echo $RANDOM >> node_modules/.cache/barf/hello
+
+      - run: echo "ROLLUP_TS_CACHE=$(yarn cache dir)/.rollup-ts-cache" >> $GITHUB_ENV
+      - run: cat "${ROLLUP_TS_CACHE}/hello" || true
+      - run: mkdir -p "$ROLLUP_TS_CACHE" && echo $RANDOM >> "${ROLLUP_TS_CACHE}/hello"
 
     outputs:
       short_id: ${{ env.SHORT_ID }}

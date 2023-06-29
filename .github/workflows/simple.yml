@@ -15,7 +15,7 @@ jobs:
           node_version: 18
           cache: npm
 
-      - run: ls -al node_modules
+      - run: ls -al node_modules || true
       - run: npm install --frozen-lockfile
       - run: if [ -f node_modules/.cache/barf ]; then cat node_modules/.cache/barf; fi
       - run: mkdir -P node_modules/.cache/barf && echo $RANDOM >> node_modules/.cache/barf

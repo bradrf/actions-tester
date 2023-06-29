@@ -17,6 +17,12 @@ jobs:
       - run: yarn install --immutable
 
       - run: echo "ROLLUP_TS_CACHE=$(yarn cache dir)/.rollup-ts-cache" >> $GITHUB_ENV
+
+      - uses: actions/cache@v3
+        with:
+          path: ${{ env.ROLLUP_TS_CACHE }}
+          key: ${{ runner.os }}-${{ github.workflow }}-${{ github.job }}
+
       - run: cat "${ROLLUP_TS_CACHE}/hello" || true
       - run: mkdir -p "$ROLLUP_TS_CACHE" && echo $RANDOM >> "${ROLLUP_TS_CACHE}/hello"
 

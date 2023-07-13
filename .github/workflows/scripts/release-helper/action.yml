@@ -27,7 +27,8 @@ runs:
           url=${{ github.event.pull_request._links.html.href }}
         else
           export GH_TOKEN='${{ github.token }}'
-          prs=$(gh pr list -R '${{ github.repository }}' -H '${{ github.ref_name }}' --json title,isDraft,url)
+          prs=$(gh pr list -R '${{ github.repository }}' -H '${{ github.ref_name }}' --json number,title,isDraft,url)
+          number=$(echo "$prs" | jq -r '.[0].number')
           title=$(echo "$prs" | jq -r '.[0].title')
           isDraft=$(echo "$prs" | jq -r '.[0].isDraft')
           url=$(echo "$prs" | jq -r '.[0].url')
@@ -62,6 +63,7 @@ runs:
         echo "RELEASE_KIND=${kind}" >> $GITHUB_ENV
         echo "RELEASE_ABBREV=${abbrev}" >> $GITHUB_ENV
         echo "RELEASE_TAG=${tag}" >> $GITHUB_ENV
+        echo "RELEASE_PR_NUMBER=${number}" >> $GITHUB_ENV
         echo "RELEASE_TITLE="${kind^}" release $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
       shell: bash
 

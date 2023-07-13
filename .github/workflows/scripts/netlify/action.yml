@@ -67,12 +67,12 @@ runs:
       shell: bash
 
     - run: >-
-        if gh pr view ${{ github.event.number }} --json comments -q '.comments.[].body' | grep -qF "${{ env.DEPLOY_URL }}"; then
+        if gh pr view ${{ env.RELEASE_PR_NUMBER }} --json comments -q '.comments.[].body' | grep -qF "${{ env.DEPLOY_URL }}"; then
           echo 'PR comment already includes ${{ env.DEPLOY_URL }}' ;
         else
-          cat ./.github/workflows/scripts/netlify/pull_request_template.md | envsubst | gh pr comment ${{ github.event.number }} -F - ;
+          cat ./.github/workflows/scripts/netlify/pull_request_template.md | envsubst | gh pr comment ${{ env.RELEASE_PR_NUMBER }} -F - ;
         fi
-      if: github.event_name == 'pull_request'
+      if: env.RELEASE_PR_NUMBER
       shell: bash
       env:
         GH_TOKEN: ${{ github.token }}

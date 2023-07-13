@@ -63,7 +63,7 @@ runs:
         echo "RELEASE_KIND=${kind}" >> $GITHUB_ENV
         echo "RELEASE_ABBREV=${abbrev}" >> $GITHUB_ENV
         echo "RELEASE_TAG=${tag}" >> $GITHUB_ENV
-        echo "RELEASE_PR_NUMBER=${number}" >> $GITHUB_ENV
+        if [ "$number" != null ]; then echo "RELEASE_PR_NUMBER=${number}" >> $GITHUB_ENV; fi
         echo "RELEASE_TITLE="${kind^}" release $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
       shell: bash
 

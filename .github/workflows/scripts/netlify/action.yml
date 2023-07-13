@@ -63,7 +63,7 @@ runs:
 
     # - run: echo "DEPLOY_ID=$(basename '${{ env.DEPLOY_LOG }}')" >> $GITHUB_ENV
     #   shell: bash
-    - run: echo "DEPLOY_URL=https://floofy.dev" >> $GITHUB_ENV
+    - run: echo "DEPLOY_URL=https://floofy1.dev" >> $GITHUB_ENV
       shell: bash
 
     - run: >-

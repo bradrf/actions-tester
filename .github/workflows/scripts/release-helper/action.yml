@@ -4,8 +4,9 @@ description: Evaluates the state of git to determine the kind of release to be r
 runs:
   using: composite
   steps:
-    - name: Evaluate state of ${{ github.ref_name }}
-      run: |
+    # names are ignored in scripts (!!) so we "log" it with a comment on the 1st line
+    - run: |
+        # Evaluate state of ${{ github.ref_name }}
         sha=${{ github.sha }}
         if [ ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'release-prd-') }} = true ]; then
           kind=production
@@ -14,12 +15,37 @@ runs:
           kind=staging
           abbrev=stg
         elif [ ${{ github.event_name == 'pull_request' }} = true ]; then
-          kind=preview
-          abbrev=pre
+          if [ '${{ github.event.pull_request.draft }}' = false ]; then
+            kind=preview
+            abbrev=pre
+          else
+            kind=draft
+            abbrev=dft
+          fi
           sha=${{ github.event.pull_request.head.sha }}
+          title=pull-${{ github.event.number }}
+          url=${{ github.event.pull_request._links.html.href }}
         else
-          kind=other
-          abbrev=oth
+          export GH_TOKEN='${{ github.token }}'
+          prs=$(gh pr list -R '${{ github.repository }}' -H '${{ github.ref_name }}' --json title,isDraft,url)
+          title=$(echo "$prs" | jq -r '.[0].title')
+          isDraft=$(echo "$prs" | jq -r '.[0].isDraft')
+          url=$(echo "$prs" | jq -r '.[0].url')
+          if [ "$title" = null ]; then
+            kind=other
+            abbrev=oth
+          else
+            if [ "$isDraft" = false ]; then
+              kind=preview
+              abbrev=pre
+            else
+              kind=draft
+              abbrev=dft
+            fi
+          fi
+        fi
+        if [ "$url" != null ]; then
+          echo "Associated pull request (${kind}): [${title}](${url})" >> $GITHUB_STEP_SUMMARY
         fi
         if [ ${{ github.ref_type == 'tag' }} = true ]; then
           tag='${{ github.ref_name }}'

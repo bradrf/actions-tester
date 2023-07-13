@@ -1,5 +1,7 @@
 name: simple
 on:
+  pull_request:
+    types: [ ready_for_review, reopened ]
   push:
     branches:
       - "main"
@@ -9,6 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Dump GitHub context
+        run: echo "${{ toJson(github) }}"
+
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -16,15 +21,8 @@ jobs:
           cache: yarn
       - run: yarn install --immutable
 
-      - run: echo "ROLLUP_TS_CACHE=$(yarn cache dir)/.rollup-ts-cache" >> $GITHUB_ENV
-
-      - uses: actions/cache@v3
-        with:
-          path: ${{ env.ROLLUP_TS_CACHE }}
-          key: ${{ runner.os }}-${{ github.workflow }}-${{ github.job }}
-
-      - run: cat "${ROLLUP_TS_CACHE}/hello" || true
-      - run: mkdir -p "$ROLLUP_TS_CACHE" && echo $RANDOM >> "${ROLLUP_TS_CACHE}/hello"
+      - uses: ./.github/workflows/scripts/release-helper
+      - uses: ./.github/workflows/scripts/netlify
 
     outputs:
       short_id: ${{ env.SHORT_ID }}

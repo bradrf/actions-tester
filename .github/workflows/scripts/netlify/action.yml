@@ -28,6 +28,9 @@ runs:
     #     fi >> $GITHUB_ENV;
     #   shell: bash
 
+    - uses: ./.github/workflows/scripts/release-helper
+      if: env.RELEASE_ENV == ''
+
     - run: >-
         case "${{ inputs.context }}" in
           production) echo DEPLOY_ARG="--prod" ;;

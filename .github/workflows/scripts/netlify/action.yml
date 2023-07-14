@@ -28,15 +28,15 @@ runs:
     #     fi >> $GITHUB_ENV;
     #   shell: bash
 
-    # - run: >-
-    #     case "${{ inputs.context }}" in
-    #       production) echo DEPLOY_ARG="--prod" ;;
-    #       staging) echo DEPLOY_ARG="--alias staging" ;;
-    #       *) echo DEPLOY_ARG="--alias deploy-preview-${{ github.event.number }}" ;;
-    #     esac >> $GITHUB_ENV
-    #   shell: bash
+    - run: >-
+        case "${{ inputs.context }}" in
+          production) echo DEPLOY_ARG="--prod" ;;
+          staging) echo DEPLOY_ARG="--alias staging" ;;
+          *) echo DEPLOY_ARG="--alias deploy-preview-${{ env.RELEASE_PR_NUMBER || github.event.number }}" ;;
+        esac >> $GITHUB_ENV
+      shell: bash
 
-    # # strip single quotes to avoid issues when the message is passed as the deploy message below
+    # strip single quotes to avoid issues when the message is passed as the deploy message below
     # - run: echo "MESSAGE=$(git log -1 --oneline ${{ env.COMMIT_SHA }} | sed -e "s/'/_/g")" >> $GITHUB_ENV
     #   shell: bash
 
@@ -61,9 +61,7 @@ runs:
     # - run: awk '/^Logs:/{print "DEPLOY_LOG=" $2} /^Website/{print "DEPLOY_URL=" $NF}' deploy.out >> $GITHUB_ENV
     #   shell: bash
 
-    # - run: echo "DEPLOY_ID=$(basename '${{ env.DEPLOY_LOG }}')" >> $GITHUB_ENV
-    #   shell: bash
-    - run: echo "DEPLOY_URL=https://floofy2.dev" >> $GITHUB_ENV
+    - run: echo "DEPLOY_ID=$(basename '${{ env.DEPLOY_LOG }}')" >> $GITHUB_ENV
       shell: bash
 
     - run: >-

@@ -21,7 +21,7 @@ jobs:
           cache: yarn
       - run: yarn install --immutable
 
-      # - uses: ./.github/workflows/scripts/release-helper
+      - uses: ./.github/workflows/scripts/release-helper
       - uses: ./.github/workflows/scripts/netlify
 
     outputs:

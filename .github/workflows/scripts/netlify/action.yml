@@ -28,15 +28,18 @@ runs:
     #     fi >> $GITHUB_ENV;
     #   shell: bash
 
-    # - run: >-
-    #     case "${{ inputs.context }}" in
-    #       production) echo DEPLOY_ARG="--prod" ;;
-    #       staging) echo DEPLOY_ARG="--alias staging" ;;
-    #       *) echo DEPLOY_ARG="--alias deploy-preview-${{ github.event.number }}" ;;
-    #     esac >> $GITHUB_ENV
-    #   shell: bash
+    - uses: ./.github/workflows/scripts/release-helper
+      if: env.RELEASE_ENV == ''
 
-    # # strip single quotes to avoid issues when the message is passed as the deploy message below
+    - run: >-
+        case "${{ inputs.context }}" in
+          production) echo DEPLOY_ARG="--prod" ;;
+          staging) echo DEPLOY_ARG="--alias staging" ;;
+          *) echo DEPLOY_ARG="--alias deploy-preview-${{ env.RELEASE_PR_NUMBER || github.event.number }}" ;;
+        esac >> $GITHUB_ENV
+      shell: bash
+
+    # strip single quotes to avoid issues when the message is passed as the deploy message below
     # - run: echo "MESSAGE=$(git log -1 --oneline ${{ env.COMMIT_SHA }} | sed -e "s/'/_/g")" >> $GITHUB_ENV
     #   shell: bash
 
@@ -61,18 +64,16 @@ runs:
     # - run: awk '/^Logs:/{print "DEPLOY_LOG=" $2} /^Website/{print "DEPLOY_URL=" $NF}' deploy.out >> $GITHUB_ENV
     #   shell: bash
 
-    # - run: echo "DEPLOY_ID=$(basename '${{ env.DEPLOY_LOG }}')" >> $GITHUB_ENV
-    #   shell: bash
-    - run: echo "DEPLOY_URL=https://floofy.dev" >> $GITHUB_ENV
+    - run: echo "DEPLOY_ID=$(basename '${{ env.DEPLOY_LOG }}')" >> $GITHUB_ENV
       shell: bash
 
     - run: >-
-        if gh pr view ${{ github.event.number }} --json comments -q '.comments.[].body' | grep -qF "${{ env.DEPLOY_URL }}"; then
+        if gh pr view ${{ env.RELEASE_PR_NUMBER }} --json comments -q '.comments.[].body' | grep -qF "${{ env.DEPLOY_URL }}"; then
           echo 'PR comment already includes ${{ env.DEPLOY_URL }}' ;
         else
-          cat ./.github/workflows/scripts/netlify/pull_request_template.md | envsubst | gh pr comment ${{ github.event.number }} -F - ;
+          cat ./.github/workflows/scripts/netlify/pull_request_template.md | envsubst | gh pr comment ${{ env.RELEASE_PR_NUMBER }} -F - ;
         fi
-      if: github.event_name == 'pull_request'
+      if: env.RELEASE_PR_NUMBER != ''
       shell: bash
       env:
         GH_TOKEN: ${{ github.token }}

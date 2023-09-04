@@ -9,28 +9,33 @@ jobs:
 
     steps:
       - name: Check PR changes
-        id: check_changes
+        id: check
         uses: actions/github-script@v6
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const files = await github.pulls.listFiles({
+            const files = await github.rest.pulls.listFiles({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number,
             });
 
-            const modifiedFilesInSubdirectory = files.data.some(file => {
+            let hasMobileKeyChanges = false;
+            const modifiedFilesInSubdirectory = files.data.forEach(file => {
               console.log('barf', file.filename);
-              return false;
+              if (file.filename.match(/^(lib|web|svr)-mobilekey\//)) {
+                hasMobileKeyChanges = true;
+              }
             });
 
-            if (modifiedFilesInSubdirectory) {
-              core.setOutput('subdirectory_changes', 'true');
-            } else {
-              core.setOutput('subdirectory_changes', 'false');
-            }
+            core.setOutput('mobilekey', hasMobileKeyChanges ? 'cleanup' : '');
+    outputs:
+      mobilekey: ${{ steps.check.outputs.mobilekey }}
 
-      - name: Execute on PR close
-        if: steps.check_changes.outputs.subdirectory_changes == 'true'
-        run: |
-          # Your desired commands to execute when PR is closed with changes in the subdirectory.
+  mobilekey_cleanup:
+    needs: check_changes
+    if: needs.check_changes.outputs.mobilekey == 'cleanup'
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: echo 'mobilekey cleanup!!'

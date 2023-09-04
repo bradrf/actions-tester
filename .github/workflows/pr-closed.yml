@@ -1,0 +1,36 @@
+name: PR Closed
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  check_changes:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check PR changes
+        id: check_changes
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const files = await github.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+            });
+
+            const modifiedFilesInSubdirectory = files.data.some(file => {
+              console.log('barf', file.filename);
+              return false;
+            });
+
+            if (modifiedFilesInSubdirectory) {
+              core.setOutput('subdirectory_changes', 'true');
+            } else {
+              core.setOutput('subdirectory_changes', 'false');
+            }
+
+      - name: Execute on PR close
+        if: steps.check_changes.outputs.subdirectory_changes == 'true'
+        run: |
+          # Your desired commands to execute when PR is closed with changes in the subdirectory.

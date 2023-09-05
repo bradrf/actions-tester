@@ -23,9 +23,9 @@ runs:
             abbrev=dft
           fi
           sha=${{ github.event.pull_request.head.sha }}
-          echo top=${{ github.event.number}}
-          echo pull=${{ github.event.pull_request.number}
-          number=${{ github.event.number || github.event.pull_request.number }}
+          n1=${{ github.event.number }}
+          n2=${{ github.event.pull_request.number }}
+          if [ -n "$n1" ]; then number=$n1; else number=$n2; fi
           title=pull-${number}
           url=${{ github.event.pull_request._links.html.href }}
         else

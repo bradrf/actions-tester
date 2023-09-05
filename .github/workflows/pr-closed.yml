@@ -20,7 +20,7 @@ jobs:
               pull_number: context.payload.pull_request.number,
             });
 
-            let hasMobileKeyChanges = false;
+            let hasMobileKeyChanges = true;
             const modifiedFilesInSubdirectory = files.data.forEach(file => {
               console.log('barf', file.filename);
               if (file.filename.match(/^(lib|web|svr)-mobilekey\//)) {
@@ -38,4 +38,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Dump GitHub context
+        run: echo "${{ toJson(github) }}"
+      - uses: actions/checkout@v3
       - run: echo 'mobilekey cleanup!!'
+      - uses: ./.github/workflows/scripts/release-helper
+      - run: echo "barf is ${{ env.RELEASE_PR_NUMBER }}"

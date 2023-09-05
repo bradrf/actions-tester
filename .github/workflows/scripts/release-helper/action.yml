@@ -23,8 +23,8 @@ runs:
             abbrev=dft
           fi
           sha=${{ github.event.pull_request.head.sha }}
-          number=${{ github.event.number }}
-          title=pull-${{ github.event.number }}
+          number=${{ github.event.number || context.payload.pull_request.number }}
+          title=pull-${number}
           url=${{ github.event.pull_request._links.html.href }}
         else
           export GH_TOKEN='${{ github.token }}'

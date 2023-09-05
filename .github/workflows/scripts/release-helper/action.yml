@@ -8,12 +8,22 @@ runs:
     - run: |
         # Evaluate state of ${{ github.ref_name }}
         sha=${{ github.sha }}
+        function pr_eval() {
+          if [ ${{ github.event_name == 'pull_request' }} = false ]; then return; fi
+          sha=${{ github.event.pull_request.head.sha }}
+          number=${{ github.event.pull_request.number }}
+          title=pull-${number}
+          url=${{ github.event.pull_request._links.html.href }}
+          echo "barf: ${number} ${title} ${sha} ${url}"
+        }
         if [ ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'release-prd-') }} = true ]; then
           kind=production
           abbrev=prd
+          pr_eval
         elif [ ${{ github.ref_type == 'branch' && github.ref_name == 'main' }} = true -o ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'release-stg-') }} = true ]; then
           kind=staging
           abbrev=stg
+          pr_eval
         elif [ ${{ github.event_name == 'pull_request' }} = true ]; then
           if [ '${{ github.event.pull_request.draft }}' = false ]; then
             kind=preview
@@ -22,12 +32,7 @@ runs:
             kind=draft
             abbrev=dft
           fi
-          sha=${{ github.event.pull_request.head.sha }}
-          n1=${{ github.event.number }}
-          n2=${{ github.event.pull_request.number }}
-          if [ -n "$n1" ]; then number=$n1; else number=$n2; fi
-          title=pull-${number}
-          url=${{ github.event.pull_request._links.html.href }}
+          pr_eval
         else
           export GH_TOKEN='${{ github.token }}'
           prs=$(gh pr list -R '${{ github.repository }}' -H '${{ github.ref_name }}' --json number,title,isDraft,url)

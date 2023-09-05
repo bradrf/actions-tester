@@ -29,6 +29,8 @@ jobs:
             });
 
             core.setOutput('mobilekey', hasMobileKeyChanges ? 'cleanup' : '');
+      - uses: ./.github/workflows/scripts/release-helper
+      - run: echo "barf is ${{ env.RELEASE_NUMBER }}"
     outputs:
       mobilekey: ${{ steps.check.outputs.mobilekey }}
 
